@@ -1,0 +1,16 @@
+{{- if .Values.eventLog.usePVC -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "spark-history-server.fullname" . }}-event-logs
+  namespace: {{ .Release.Namespace }} 
+  labels:
+    {{- include "spark-history-server.labels" $ | trim | nindent 4 }}
+
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+{{- end -}}

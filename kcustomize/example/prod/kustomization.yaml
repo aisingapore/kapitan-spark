@@ -1,0 +1,12 @@
+resources:
+- all.yaml
+patches:
+- target:
+      version: v1
+      kind: Secret
+      name: .*google-secret
+  path: google-secret.yaml
+
+
+
+

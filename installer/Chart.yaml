@@ -1,0 +1,30 @@
+apiVersion: v2
+name: spark-ecosystem
+description:  Bundled Helm chart for Kubernetes
+type: application
+version: 0.1.0
+dependencies:
+- name: spark-thrift-server
+  repository: file://charts/spark-thrift-server
+  version: 0.1.0
+  condition: spark-thrift-server.enabled
+
+- name: hive-metastore
+  repository: file://charts/hive-metastore
+  version: 0.1.0
+  condition: hive-metastore.enabled
+
+- name: lighter
+  repository: file://charts/lighter
+  version: 0.1.0
+  condition: lighter.enabled
+
+- name: jupyterlab
+  repository: file://charts/jupyterlab
+  version: 0.1.0
+  condition: jupyterlab.enabled
+
+- name: spark-history-server
+  repository: file://charts/spark-history-server
+  version: 0.1.0
+  condition: spark-history-server.enabled

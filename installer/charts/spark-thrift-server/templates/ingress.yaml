@@ -1,0 +1,38 @@
+{{- if and .Values.ingress.enabled (.Values.ingress.http) -}}
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: {{ include "spark-thrift-server.fullname" . }}
+    namespace: {{ .Release.Namespace }} 
+    {{- if .Values.ingress.annotations }}
+    annotations: 
+            {{- tpl (toYaml .Values.ingress.annotations) . | nindent 8 }}
+    {{- end }}
+spec:
+    rules:
+    - http: 
+        {{- tpl (toYaml .Values.ingress.http) . | nindent 8 }}
+      {{- if .Values.ingress.host }}
+      host: {{ .Values.ingress.host }}
+      {{- end }}
+    {{- if .Values.ingress.tls }}
+    tls:
+        {{- range .Values.ingress.tls }}
+        - hosts:
+            {{- range .hosts }}
+            - {{ . | quote }}
+            {{- end }}
+        {{- if .secretName  }}
+        secretName: {{ .secretName }}
+        {{- end }}
+
+        {{- end }}
+    {{- end }}
+
+{{- end -}}
+
+
+
+
+

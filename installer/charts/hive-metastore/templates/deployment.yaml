@@ -1,0 +1,67 @@
+
+{{- $postgresqlDatabase := index .Values "hive-metastore-postgresql" "auth" "database" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hive-metastore.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "hive-metastore.labels" $ | trim | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+        name: {{ include "hive-metastore.fullname" . }}
+  template:
+    metadata:
+      labels:
+          name: {{ include "hive-metastore.fullname" . }}
+    spec:
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      {{ toYaml .Values.image.pullSecrets | indent 8 }}
+      {{- end }}    
+      initContainers:
+        - name: check-db-ready
+          image: bitnami/postgresql:13.8.0
+          command: ['sh', '-c', 
+                  'until pg_isready -h {{ include "hive-metastore.fullname" . }}-postgresql -U {{ required "Postgresql database name required" $postgresqlDatabase }} -p 5432; 
+                  do echo waiting for database; sleep 2; done;']                         
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{.Values.image.repository}}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+              allowPrivilegeEscalation: false
+          command: ["bash", "/home/appuser/opt/hive-metastore/bin/entrypoint.sh"]
+          ports:
+            - name: tcp
+              containerPort: 9083
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 90
+            tcpSocket:
+              port: 9083
+          readinessProbe:
+            initialDelaySeconds: 90
+            tcpSocket:
+              port: 9083
+          resources:
+            {{- toYaml .Values.resources | trim  | nindent 12 }}
+          volumeMounts:
+          - name: secret-files
+            mountPath: /home/appuser/opt/hive-metastore/conf/templates/metastore-site.xml.tpl
+            subPath: metastore-site.xml.tpl
+          - name: secret-files
+            mountPath: /home/appuser/opt/hive-metastore/bin/entrypoint.sh
+            subPath: entrypoint.sh
+        
+      volumes:
+      - name: secret-files
+        secret:
+          secretName: {{ template "hive-metastore.fullname" . }}-secret
+
+
+        
