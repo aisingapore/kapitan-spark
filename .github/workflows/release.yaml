@@ -30,13 +30,19 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ github.token }}
-      - name: Build hive metastore docker image and push ghcr.io
-        run: | 
-            docker build -f ./installer/charts/hive-metastore/Dockerfile --tag ghcr.io/aisingapore/kapitan-spark/hive-metastore:${{ github.event.release.tag_name }}
-            docker push ghcr.io/aisingapore/kapitan-spark/hive-metastore:${{ github.event.release.tag_name }}-hadoop${{ matrix.hadoop_version }}
-      - name: Build Spark docker image and push to ghcr.io
-        run: | 
-            docker build -f ./spark_docker_image/Dockerfile --tag ghcr.io/aisingapore/kapitan-spark/spark:${{ github.event.release.tag_name }}
-            docker push ghcr.io/aisingapore/kapitan-spark/spark:${{ github.event.release.tag_name }}-spark${{ matrix.spark_version }}
             
-      
+      - name: Build hive metastore docker image and push ghcr.io
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./installer/charts/hive-metastore/Dockerfile
+          push: true
+          tags: ghcr.io/aisingapore/kapitan-spark/hive-metastore:${{ github.event.release.tag_name }}-hadoop${{ matrix.hadoop_version }}
+
+      - name: Build Spark docker image and push to ghcr.io
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./spark_docker_image/Dockerfile
+          push: true
+          tags: ghcr.io/aisingapore/kapitan-spark/spark:${{ github.event.release.tag_name }}-spark${{ matrix.spark_version }}
