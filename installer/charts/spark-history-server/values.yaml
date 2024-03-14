@@ -1,0 +1,91 @@
+# Default values for spark-history-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: ghcr.io/aisingapore/kapitan-spark/spark
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 0.0.1-spark3.5.0
+  # pullSecrets:
+  # - name: myRegistryKeySecretName
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+service:
+  type: ClusterIP # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
+  clusterIP: # optional no need value
+  nodePortSparkHistoryPort: 34001 # Only need to fill up if service type is NodePort
+  annotations: {}
+    # networking.gke.io/load-balancer-type: "Internal"
+    # service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+ingress:
+  enabled: true
+  annotations:
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+
+    # acme.cert-manager.io/http01-edit-in-place: "true"
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+    # cert-manager.io/issue-temporary-certificate: "true"
+    # kubernetes.io/ingress.class: nginx
+
+    # type of authentication
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: "{{ include \"spark-history-server.fullname\" . }}-auth"
+    nginx.ingress.kubernetes.io/auth-secret-type: auth-map
+    nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required - please key in username and password'
+    
+    nginx.ingress.kubernetes.io/proxy-redirect-from: http://$host/
+    nginx.ingress.kubernetes.io/proxy-redirect-to: http://$host/spark-history-server/
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+
+
+  host: # leave empty if do not have dns name
+
+  http:
+    paths: 
+    - backend:
+        service:
+          name: "{{ include \"spark-history-server.fullname\" . }}"
+          port:
+            number: 18080
+      path: /spark-history-server(/|$)(.*)
+
+      pathType: ImplementationSpecific
+  
+  tls: []
+    # - hosts:
+    #    - spark-history-server.begonia.aisingapore.net
+      #secretName: chart-example-tls
+
+resources:
+  limits:
+    cpu: 1
+    memory: 1Gi
+  requests:
+    cpu: 0.2
+    memory: 0.5Gi
+
+eventLog:
+  usePVC: true # use Kubernetes Persistence volume, put false if using blob storage
+  dir: /opt/spark/event-logs # can also use blob storage s3a
+ 
+s3a:
+  accessKey: empty
+  secretKey: empty
+  endpoint: https://empty
+    
+passwordPairs:
+  dataOps: tuzr3bYvP1pq6 # output of openssl passwd -quiet <password> ; password is 5Wmi95w4

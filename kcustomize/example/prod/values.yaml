@@ -1,0 +1,174 @@
+hive-metastore:
+    image:
+      repository: ghcr.io/aisingapore/kapitan-spark/hive-metastore
+      tag: 0.0.1-hadoop3.3.4
+      pullPolicy: Always
+      # pullSecrets:
+      # - name: myRegistryKeySecretName
+    hive-metastore-postgresql:
+      image:
+          tag: 15.3.0-debian-11-r7
+      auth:
+          username: hive
+          password: E9mZ424xCUt3
+          database: metastore
+
+spark-thrift-server:
+    service:
+      type: LoadBalancer # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
+      clusterIP: # optional no need value
+      nodePortSparkUIPort: 31001 # Only need to fill up if service type is NodePort
+      nodePortSparkThriftServerPort: 31002 # Only need to fill up if service type is NodePort
+      annotations: {}
+        # networking.gke.io/load-balancer-type: "Internal"
+        # service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+    ingress:
+      enabled: false
+      annotations: {}
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
+
+        # acme.cert-manager.io/http01-edit-in-place: "true"
+        # cert-manager.io/cluster-issuer: letsencrypt-prod
+        # cert-manager.io/issue-temporary-certificate: "true"
+        # kubernetes.io/ingress.class: nginx
+      host: # leave empty if do not have dns name
+      tls: []
+        # - hosts:
+        #    - spark-thrift-server.begonia.aisingapore.net
+          #secretName: chart-example-tls
+    s3a:
+      accessKey: empty
+      secretKey: empty
+      endpoint: https://empty
+    warehouse:
+        dir:  # can use PVC/blob storage
+
+
+    image:
+      repository: ghcr.io/aisingapore/kapitan-spark/spark
+      pullPolicy: IfNotPresent
+      tag: 0.0.1-spark3.5.0
+      # pullSecrets:
+      # - name: myRegistryKeySecretName
+lighter:
+    service:
+      type: ClusterIP # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
+      clusterIP: # optional no need value
+      nodePortLighterPort: 32001 # Only need to fill up if service type is NodePort
+      annotations: {}
+        # networking.gke.io/load-balancer-type: "Internal"
+        # service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+    ingress:
+      enabled: true
+      annotations:
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
+
+        # acme.cert-manager.io/http01-edit-in-place: "true"
+        # cert-manager.io/cluster-issuer: letsencrypt-prod
+        # cert-manager.io/issue-temporary-certificate: "true"
+        # kubernetes.io/ingress.class: nginx
+
+
+      host: # leave empty if do not have dns name
+      tls: []
+        # - hosts:
+        #    - spark-thrift-server.begonia.aisingapore.net
+          #secretName: chart-example-tls
+    s3a:
+      endpoint: https://empty
+    spark:
+      history:
+          url: https://empty
+          eventLog:
+              enabled: true
+              usePVC: true # use Kubernetes Persistence volume, put false if using blob storage
+              dir: /opt/spark/event-logs
+    passwordPairs:
+      dataOps: tuzr3bYvP1pq6 # output of openssl passwd -quiet <password> ; password is 5Wmi95w4
+    lighter-postgresql:
+      image:
+          tag: 15.3.0-debian-11-r7
+      auth:
+          username: lighter
+          password: mU233@t3PqXP
+          database: lighter
+    image:
+        # pullSecrets:
+        # - name: myRegistryKeySecretName
+      spark:
+          repository: ghcr.io/aisingapore/kapitan-spark/spark 
+          tag: 0.0.1-spark3.5.0
+          pullPolicy: IfNotPresent
+
+jupyterlab:
+    service:
+      type: ClusterIP # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
+      clusterIP: # optional no need value
+      nodePortLighterPort: 33001 # Only need to fill up if service type is NodePort
+      annotations: {}
+        # networking.gke.io/load-balancer-type: "Internal"
+        # service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+    ingress:
+      enabled: true
+      annotations:
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
+
+        # acme.cert-manager.io/http01-edit-in-place: "true"
+        # cert-manager.io/cluster-issuer: letsencrypt-prod
+        # cert-manager.io/issue-temporary-certificate: "true"
+        # kubernetes.io/ingress.class: nginx
+
+      host: # leave empty if do not have dns name
+      tls: []
+        # - hosts:
+        #    - spark-thrift-server.begonia.aisingapore.net
+          #secretName: chart-example-tls
+
+    # Jupyter password is generated using below python code 
+    # from notebook.auth import passwd  
+    # passwd("spark ecosystem")
+    jupyterPassword: argon2:$argon2id$v=19$m=10240,t=10,p=8$rqX1GcIVDKwH73enY4FDXQ$WUxU8yQaMaIdp3CO14FGns74LzrxCGmqa3WwkZBe7jE   
+    lighterPassword: 5Wmi95w4 # refer to lighter values.yaml on how to generate this password
+
+spark-history-server:
+    eventLog:
+        usePVC: true
+        dir: /opt/spark/event-logs  # need blob storage or network storage
+    s3a:
+      accessKey: empty
+      secretKey: empty
+      endpoint: https://empty
+
+    passwordPairs:
+      dataOps: tuzr3bYvP1pq6 # output of openssl passwd -quiet <password> ; password is 5Wmi95w4
+    image:
+      repository: ghcr.io/aisingapore/kapitan-spark/spark
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: 0.0.1-spark3.5.0
+      # pullSecrets:
+      # - name: myRegistryKeySecretName
+
+    ingress:
+      enabled: true
+      annotations:
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
+
+        # acme.cert-manager.io/http01-edit-in-place: "true"
+        # cert-manager.io/cluster-issuer: letsencrypt-prod
+        # cert-manager.io/issue-temporary-certificate: "true"
+        # kubernetes.io/ingress.class: nginx
+          
+
+      host: # leave empty if do not have dns name
+      tls: []
+        # - hosts:
+        #    - spark-history-server.begonia.aisingapore.net
+          #secretName: chart-example-tls

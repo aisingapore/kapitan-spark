@@ -1,0 +1,43 @@
+## Auto-scaling (hpa) configuration
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+replicaCount: 1
+
+## Default Hive image and tag. Please build image locally before applying this.
+image:
+  repository: ghcr.io/aisingapore/kapitan-spark/hive-metastore
+  tag: 0.0.1-hadoop3.3.4
+  pullPolicy: Always
+  # pullSecrets:
+  # - name: myRegistryKeySecretName
+
+service:
+  type: ClusterIP
+  ports:
+    - name: thrift
+      port: 9083
+      targetPort: 9083
+      protocol: TCP
+
+hive-metastore-postgresql:
+  image:
+      tag: 15.3.0-debian-11-r7
+  auth:
+      username: hive
+      password: E9mZ424xCUt3
+      database: metastore
+  
+
+## Resource requests and limits: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+resources:
+  limits:
+    cpu: 1
+    memory: 1Gi
+  requests:
+    cpu: 1
+    memory: 1Gi

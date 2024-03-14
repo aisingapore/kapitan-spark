@@ -2,6 +2,3 @@
 kcustomize/gcp/
 kcustomize/on-prem/
 img/*
-
-values.yaml
-README.md
