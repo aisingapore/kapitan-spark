@@ -1,0 +1,32 @@
+name: Build Spark and hive metastore docker images
+on:
+  push:
+    paths:
+    - 'installer/charts/hive-metastore/Dockerfile'
+    - 'spark_docker_image/Dockerfile'
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: docker/setup-buildx-action@v2
+      - uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - name: Build hive metastore docker image and push ghcr.io
+        run: | 
+            docker build installer/charts/hive-metastore/Dockerfile --tag ghcr.io/aisingapore/kapitan-spark/hive-metastore:${{ github.event.release.tag_name }}
+            docker push ghcr.io/aisingapore/kapitan-spark/hive-metastore:${{ github.event.release.tag_name }}
+      - name: Build Spark docker image and push to ghcr.io
+        run: | 
+            docker build spark_docker_image/Dockerfile --tag ghcr.io/aisingapore/kapitan-spark/spark:${{ github.event.release.tag_name }}
+            docker push ghcr.io/aisingapore/kapitan-spark/spark:${{ github.event.release.tag_name }}
+            
+      

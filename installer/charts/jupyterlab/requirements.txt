@@ -1,0 +1,9 @@
+matplotlib==3.7.1
+nltk==3.8.1
+wordcloud==1.8.2.2
+collection==0.1.6
+scikit-learn==1.2.2
+nbconvert[webpdf]==7.3.1
+jupyterlab-execute-time==3.0.0
+Pillow==9.5.0
+jupyterlab-git==0.41.0

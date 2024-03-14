@@ -1,0 +1,171 @@
+{{- $postgresql_database := index .Values "lighter-postgresql" "auth" "database" -}}
+{{- $postgresql_username := index .Values "lighter-postgresql" "auth" "username" -}}
+{{- $postgresql_password := index .Values "lighter-postgresql" "auth" "password" -}}
+{{- $hiveMetastoreServiceName := "" }}
+{{- $sparkHistoryServerPVCName := "" }}
+{{ if and .Values.global ( .Values.global.isTopLevel) }}
+    {{ if .Values.spark.history.eventLog.usePVC}}
+        {{- $sparkHistoryServerPVCName = printf "%s-%s" .Release.Name "spark-history-server-event-logs" | trunc 63 | trimSuffix "-" }}
+    {{- end -}}
+{{ else }}
+  {{- $hiveMetastoreNamespace := index .Values "hiveMetastore" "namespace" -}}
+  {{ range $index, $service := (lookup "v1" "Service" $hiveMetastoreNamespace "").items }}
+      {{ range $element := $service.spec.ports -}}
+          {{ range $key, $value := $element -}}
+              {{ if and (eq "port" $key) (eq 9083 $value) }}
+                  {{- $hiveMetastoreServiceName = $service.metadata.name }}
+                  {{ break }}
+              {{ end }}
+          {{ end }}
+      {{ end }}
+  {{ end }}
+  {{- if eq $hiveMetastoreServiceName "" }}
+  {{- fail ( printf "Cannot find hive metastore service in namespace: %s, update variable hiveMetastore.namespace in values.yaml" $hiveMetastoreNamespace) }}
+  {{- end }}
+
+  {{ if .Values.spark.history.eventLog.usePVC}}
+    {{ range $index, $pvc := (lookup "v1" "PersistentVolumeClaim" .Release.Namespace "").items }}
+        {{ if hasSuffix "-event-logs" $pvc.metadata.name }} 
+            {{ $sparkHistoryServerPVCName = $pvc.metadata.name }}
+            {{ break }}
+        {{ end }}
+    {{ end }}
+    {{- if eq $sparkHistoryServerPVCName "" }}
+    {{- fail ( printf "Cannot find PVC used to store Spark History Server's event logs in namespace: %s, set usePVC=false is not using PVC" .Release.Namespace) }}
+    {{- end }}
+  {{ end }}
+
+
+
+{{ end }}
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{ include "lighter.fullname" . }}
+    namespace: {{ .Release.Namespace }} 
+    labels:
+        {{- include "lighter.labels" $ | trim | nindent 4 }}
+spec:
+    selector:
+        matchLabels:
+            name: {{ include "lighter.fullname" . }}
+    replicas: 1
+    strategy:
+        rollingUpdate:
+            maxUnavailable: 0
+            maxSurge: 1
+    template:
+        metadata:
+            labels:
+                name: {{ include "lighter.fullname" . }}
+        spec:
+            {{- if .Values.image.pullSecrets }}
+            imagePullSecrets:
+            {{ toYaml .Values.image.pullSecrets | indent 8 }}
+            {{- end }}           
+            containers:
+                -   image: "{{.Values.image.repository}}:{{ .Values.image.tag }}"
+                    imagePullPolicy: "{{.Values.image.pullPolicy}}"
+                    name: lighter
+                    securityContext:
+                        allowPrivilegeEscalation: false                    
+                    readinessProbe:
+                        httpGet:
+                            path: /health/readiness
+                            port: 8080
+                        initialDelaySeconds: 15
+                        periodSeconds: 15
+                    resources:
+                        {{- toYaml .Values.resources | trim  | nindent 25 }}
+                    ports:
+                        -   containerPort: 8080
+                    env:
+                        -   name: LIGHTER_KUBERNETES_ENABLED
+                            value: "true" # always true
+                        -   name: LIGHTER_STORAGE_JDBC_USERNAME
+                            value: {{ $postgresql_username }}
+                        -   name: LIGHTER_STORAGE_JDBC_PASSWORD
+                            value: {{ $postgresql_password }}
+                        -   name: LIGHTER_STORAGE_JDBC_URL
+                            value: jdbc:postgresql://{{ include "lighter.fullname" . }}-postgresql:5432/{{ $postgresql_database }}
+                        -   name: LIGHTER_STORAGE_JDBC_DRIVER_CLASS_NAME
+                            value: org.postgresql.Driver
+                        # -   name: LIGHTER_SPARK_HISTORY_SERVER_URL
+                        #     value: https://address_to_spark_history/spark-history
+                        -   name: LIGHTER_MAX_RUNNING_JOBS
+                            value: "100"
+                        -   name: LIGHTER_KUBERNETES_NAMESPACE
+                            value: {{ .Release.Namespace }} 
+                        -   name: LIGHTER_URL
+                            value: http://{{ include "lighter.fullname" . }}:8080
+                        -   name: LIGHTER_SESSION_DEFAULT_CONF
+                            value: '{   
+                                        "spark.hadoop.hive.metastore.uris": "thrift://{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Name }}-hive-metastore{{ else }}{{ required "hive metastore installed full service name required" $hiveMetastoreServiceName }}{{ end }}.{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Namespace }}{{ else }}{{ required "hive metastore installed namespace required" .Values.hiveMetastore.namespace }}{{ end }}.svc.cluster.local:9083",
+                                        "spark.sql.extensions": "io.delta.sql.DeltaSparkSessionExtension",
+                                        "spark.sql.catalog.spark_catalog": "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+                                        "spark.kubernetes.container.image": "{{ .Values.image.spark.repository }}:{{ .Values.image.spark.tag }}",
+                                        "spark.kubernetes.container.image.pullPolicy": "{{.Values.image.pullPolicy}}",
+                                        {{- if .Values.image.pullSecrets }}
+                                        "spark.kubernetes.container.image.pullSecrets": "{{ join "," (values (index .Values.image.pullSecrets 0)) }}",
+                                        {{- end }}
+                                        "spark.driver.extraJavaOptions": "-Divy.cache.dir=/tmp -Divy.home=/tmp",
+                                        "spark.kubernetes.executor.podNamePrefix": "{{ include "lighter.fullname" . }}",
+                                        "spark.jars.packages": "",
+                                        "spark.jars": "",
+                                        "spark.sql.catalogImplementation": "hive",
+
+                                        "spark.hadoop.fs.s3a.endpoint": "{{ .Values.s3a.endpoint }}",
+                                        "spark.hadoop.fs.s3a.path.style.access": "true",
+                                        "spark.hadoop.hive.input.format": "io.delta.hive.HiveInputFormat",
+                                        "spark.hadoop.hive.tez.input.format": "io.delta.hive.HiveInputFormat",
+
+                                        "spark.dynamicAllocation.enabled": "true",
+                                        "spark.dynamicAllocation.shuffleTracking.enabled": "true",
+                                        "spark.dynamicAllocation.minExecutors": "1",
+                                        "spark.dynamicAllocation.maxExecutors": "5",
+
+                                        "spark.hadoop.fs.AbstractFileSystem.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS",
+                                        "spark.hadoop.fs.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem",
+                                        "spark.delta.logStore.gs.impl": "io.delta.storage.GCSLogStore",
+                                        "spark.network.timeout": "320s",
+
+                                        "spark.kubernetes.driverEnv.PYTHONUSERBASE": "{{ .Values.python.user.base }}",
+                                        "spark.executorEnv.PYTHONUSERBASE": "{{ .Values.python.user.base }}",
+                                        "spark.kubernetes.driverEnv.PYTHONPATH": "{{ .Values.python.user.base }}",
+                                        "spark.executorEnv.PYTHONPATH": "{{ .Values.python.user.base }}",
+                                        
+                                        {{ if .Values.spark.history.eventLog.usePVC }}
+                                        "spark.kubernetes.driver.volumes.persistentVolumeClaim.{{ $sparkHistoryServerPVCName }}.options.claimName": "{{ $sparkHistoryServerPVCName }}",
+                                        "spark.kubernetes.driver.volumes.persistentVolumeClaim.{{ $sparkHistoryServerPVCName }}.mount.path": "{{ .Values.spark.history.eventLog.dir }}",
+                                        "spark.kubernetes.executor.volumes.persistentVolumeClaim.{{ $sparkHistoryServerPVCName }}.options.claimName": "{{ $sparkHistoryServerPVCName }}",
+                                        "spark.kubernetes.executor.volumes.persistentVolumeClaim.{{ $sparkHistoryServerPVCName }}.mount.path": "{{ .Values.spark.history.eventLog.dir }}",
+                                        {{ end }}
+                                        "spark.eventLog.dir": "{{ .Values.spark.history.eventLog.dir }}",
+                                        "spark.eventLog.enabled": "{{ .Values.spark.history.eventLog.enabled }}",
+                                        "spark.local.dir": "{{ .Values.local.dir }}"
+
+                                        
+
+                                    }'
+                        - name: LIGHTER_SESSION_TIMEOUT_INTERVAL
+                          value: "90m" 
+                        - name: LIGHTER_SPARK_HISTORY_SERVER_URL
+                          value: "{{ .Values.spark.history.url }}"
+                        - name: LIGHTER_KUBERNETES_SERVICE_ACCOUNT
+                          value: "{{ include "lighter.fullname" . }}-sa"
+                    {{ if .Values.spark.history.eventLog.usePVC }}
+                    volumeMounts:
+                    - mountPath: "{{ .Values.spark.history.eventLog.dir }}"
+                      name: event-logs
+                    {{ end }}    
+                        
+            serviceAccountName: "{{ include "lighter.fullname" . }}-sa"
+            {{ if .Values.spark.history.eventLog.usePVC }}
+            volumes:
+            - name: event-logs
+              persistentVolumeClaim:
+                    claimName: {{ $sparkHistoryServerPVCName }}
+            {{ end }}

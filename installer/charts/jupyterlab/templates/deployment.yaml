@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jupyterlab.fullname" . }}
+  namespace: {{ .Release.Namespace }} 
+  labels:
+    {{- include "jupyterlab.labels" $ | trim | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      name: {{ include "jupyterlab.fullname" . }}
+  replicas: 1
+  strategy:
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+  template:
+    metadata:
+      labels:
+        name: {{ include "jupyterlab.fullname" . }}
+    spec:
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      {{ toYaml .Values.image.pullSecrets | indent 8 }}
+      {{- end }}   
+      serviceAccountName: "{{ include "jupyterlab.fullname" . }}-sa"
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+              allowPrivilegeEscalation: false
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8888
+          command: [ "start-notebook.sh" ]
+          args:
+            - "--NotebookApp.token="
+            {{if not ( eq (index .Values.ingress.http.paths 0 "pathType") "Prefix")}}
+            - "--NotebookApp.base_url=jupyterlab"
+            {{end}}
+            - "--KernelSpecManager.ensure_native_kernel=False"
+            - "--NotebookApp.notebook_dir=/home/jovyan/work"
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    conda install sparkmagic -y
+                    pip install -r /tmp/requirements.txt  --no-cache-dir
+                    jupyter nbextension enable --py --sys-prefix widgetsnbextension
+                    jupyter-kernelspec install --user $(pip show sparkmagic | grep Location | cut -d" " -f2)/sparkmagic/kernels/pysparkkernel
+                    jupyter serverextension enable --py sparkmagic
+                    jupyter kernelspec uninstall sparkkernel -y
+                    jupyter kernelspec uninstall sparkrkernel -y
+                    jupyter kernelspec uninstall python3 -y
+                    mkdir -p /home/jovyan/.sparkmagic/
+                    cp /tmp/sparkmagic.json /home/jovyan/.sparkmagic/config.json
+                    cp /tmp/quickstart.ipynb /home/jovyan/work/quickstart.ipynb
+          readinessProbe:
+            initialDelaySeconds: 90
+            tcpSocket:
+              port: 8888
+
+          volumeMounts:
+            - name: sparkmagic
+              mountPath: /tmp/sparkmagic.json
+              subPath: sparkmagic
+            - name: secret
+              mountPath: /tmp/quickstart.ipynb
+              subPath: quickstart
+            - name: secret
+              mountPath: /home/jovyan/.jupyter/jupyter_notebook_config.py
+              subPath: jupyter_notebook_config
+            - name: pip-file
+              mountPath: /tmp/requirements.txt
+              subPath: requirements.txt
+
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: sparkmagic
+          configMap:
+            name: {{ include "jupyterlab.fullname" . }}-sparkmagic
+        - name: secret
+          secret:
+            secretName: {{ include "jupyterlab.fullname" . }}-secret
+        - name: pip-file
+          configMap:
+            name: {{ template "jupyterlab.fullname" . }}-pip-file
+

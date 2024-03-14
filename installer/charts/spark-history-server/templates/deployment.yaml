@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "spark-history-server.fullname" . }}
+  namespace: {{ .Release.Namespace }} 
+  labels:
+    {{- include "spark-history-server.labels" $ | trim | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: {{ include "spark-history-server.fullname" . }}
+  template:
+    metadata:
+      labels:
+        name: {{ include "spark-history-server.fullname" . }}
+    spec:
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      {{ toYaml .Values.image.pullSecrets | indent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+              allowPrivilegeEscalation: false          
+          args:
+            - /opt/spark/sbin/start-history-server.sh
+  
+          env:
+          - name: SPARK_NO_DAEMONIZE
+            value: "false"
+          - name: SPARK_HISTORY_OPTS
+            value: "{{if not ( eq (index .Values.ingress.http.paths 0 "pathType") "Prefix")}}-Dspark.ui.proxyBase=/spark-history-server {{end}}-Dspark.history.fs.logDirectory={{ .Values.eventLog.dir | default "/tmp" }} -Dspark.hadoop.fs.s3a.endpoint={{ .Values.s3a.endpoint }} -Dspark.hadoop.fs.s3a.path.style.access=true -Dspark.hadoop.fs.s3a.access.key={{ .Values.s3a.accessKey }} -Dspark.hadoop.fs.s3a.secret.key={{ .Values.s3a.secretKey }}"
+              
+
+
+
+          ports:
+            - name: http
+              containerPort: 18080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{ if .Values.eventLog.usePVC }}
+          volumeMounts:
+          - mountPath: "{{ .Values.eventLog.dir }}"
+            name: event-logs
+          {{ end }}
+      {{ if .Values.eventLog.usePVC }}
+      volumes:
+      - name: event-logs
+        persistentVolumeClaim:
+            claimName: {{ include "spark-history-server.fullname" . }}-event-logs
+      {{ end }}
+

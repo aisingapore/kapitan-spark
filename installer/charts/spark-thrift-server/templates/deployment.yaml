@@ -1,0 +1,177 @@
+{{- $hiveMetastoreServiceName := "" }}
+{{ if and .Values.global ( .Values.global.isTopLevel) }}
+{{ else }}
+  {{- $hiveMetastoreNamespace := index .Values "hiveMetastore" "namespace" -}}
+  {{ range $index, $service := (lookup "v1" "Service" $hiveMetastoreNamespace "").items }}
+      {{ range $element := $service.spec.ports -}}
+          {{ range $key, $value := $element -}}
+              {{ if and (eq "port" $key) (eq 9083 $value) }}
+                  {{- $hiveMetastoreServiceName = $service.metadata.name }}
+                  {{ break }}
+              {{ end }}
+          {{ end }}
+      {{ end }}
+  {{ end }}
+  {{- if eq $hiveMetastoreServiceName "" }}
+  {{- fail ( printf "Cannot find hive metastore service in namespace: %s, update variable hiveMetastore.namespace in values.yaml" $hiveMetastoreNamespace) }}
+  {{- end }}
+{{ end }}
+
+{{- $hiveMetastoreServiceFullName := "" }}
+{{ if and .Values.global ( .Values.global.isTopLevel) }}
+      {{- $hiveMetastoreServiceFullName = printf "%s%s-hive-metastore." $hiveMetastoreServiceFullName .Release.Name -}}
+{{ else }}
+      {{ required "hive metastore installed full service name required" $hiveMetastoreServiceName }}
+{{ end }}
+{{ if and .Values.global ( .Values.global.isTopLevel) }}
+      {{- $hiveMetastoreServiceFullName = printf "%s%s.svc.cluster.local" $hiveMetastoreServiceFullName .Release.Namespace -}}
+{{ else }}
+      {{ required "hive metastore installed namespace required" .Values.hiveMetastore.namespace }}
+{{ end }}
+      
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "spark-thrift-server.fullname" . }}
+  namespace: {{ .Release.Namespace }} 
+  labels:
+    {{- include "spark-thrift-server.labels" $ | trim | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: {{ include "spark-thrift-server.fullname" . }}
+  template:
+    metadata:
+      labels:
+        name: {{ include "spark-thrift-server.fullname" . }}
+    spec:
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      {{ toYaml .Values.image.pullSecrets | indent 8 }}
+      {{- end }}
+      initContainers:
+        - name: check-hive-metastore
+          image: busybox:1.35.0
+          command: ['sh', '-c', "until nslookup {{$hiveMetastoreServiceFullName}}; do echo waiting for {{$hiveMetastoreServiceFullName}}; sleep 2; done"]
+        - name: check-hive-metastore-port
+          image: busybox:1.35.0
+          command:
+            - sh
+            - -c
+            - >
+              until echo 'quit' | telnet {{$hiveMetastoreServiceFullName}} 9083;
+              do
+                sleep 2;
+              done
+      containers:
+      - name: {{ .Chart.Name }}
+        image:  "{{.Values.image.repository}}:{{ .Values.image.tag }}"
+        imagePullPolicy: "{{.Values.image.pullPolicy}}"
+        securityContext:
+            allowPrivilegeEscalation: false
+        
+        args:
+          - /opt/spark/bin/spark-submit
+          - --master
+          - k8s://https://kubernetes.default.svc
+          - --class
+          - org.apache.spark.sql.hive.thriftserver.HiveThriftServer2
+          - --deploy-mode
+          - client
+          - --name
+          - {{ include "spark-thrift-server.fullname" . }}
+          - --hiveconf
+          - hive.server2.thrift.port 10000
+          - --conf
+          - spark.executor.instances=1
+          - --conf
+          - spark.executor.memory=1G
+          - --conf
+          - spark.driver.memory=1G
+          - --conf
+          - spark.executor.cores=1
+          - --conf
+          - spark.dynamicAllocation.enabled=true
+          - --conf
+          - spark.dynamicAllocation.shuffleTracking.enabled=true
+          - --conf
+          - spark.dynamicAllocation.minExecutors=1
+          - --conf
+          - spark.dynamicAllocation.maxExecutors=10
+          - --conf
+          - spark.kubernetes.namespace={{ .Release.Namespace }}
+          - --conf
+          - spark.kubernetes.container.image={{ .Values.image.repository }}:{{ .Values.image.tag }}
+          - --conf
+          - spark.kubernetes.container.image.pullPolicy={{.Values.image.pullPolicy}}
+          {{- if .Values.image.pullSecrets }}
+          - --conf
+          - spark.kubernetes.container.image.pullSecrets={{ join "," (values (index .Values.image.pullSecrets 0)) }}
+          {{- end }}
+          - --conf
+          - spark.kubernetes.authenticate.driver.serviceAccountName={{ include "spark-thrift-server.fullname" . }}-sa
+          - --conf
+          - spark.kubernetes.driver.pod.name=$(THRIFT_POD_NAME)
+          - --conf
+          - spark.driver.bindAddress=$(THRIFT_POD_IP)
+          - --conf
+          - spark.driver.host={{ include "spark-thrift-server.fullname" . }}-headless
+          - --jars
+          - ""
+          - --conf 
+          - spark.hadoop.hive.metastore.uris=thrift://{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Name }}-hive-metastore{{ else }}{{ required "hive metastore installed full service name required" $hiveMetastoreServiceName }}{{ end }}.{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Namespace }}{{ else }}{{ required "hive metastore installed namespace required" .Values.hiveMetastore.namespace }}{{ end }}.svc.cluster.local:9083
+          - --conf 
+          - spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension 
+          - --conf 
+          - spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog
+          # kubernetes has issue with --package,need to put below command https://stackoverflow.com/questions/66722861/pyspark-packages-installation-on-kubernetes-with-spark-submit-ivy-cache-file-nos
+          - --conf 
+          - spark.driver.extraJavaOptions=-Divy.cache.dir=/tmp -Divy.home=/tmp
+          - --conf 
+          - fs.AbstractFileSystem.gs.impl=com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS
+          - --conf 
+          - spark.hadoop.fs.gs.impl=com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem
+          - --conf 
+          - spark.delta.logStore.gs.impl=io.delta.storage.GCSLogStore
+          - --packages 
+          - ""
+          - --conf
+          - spark.sql.warehouse.dir={{ .Values.warehouse.dir | default "/tmp" }}
+          
+        volumeMounts:
+          - name: secret-files
+            mountPath: /opt/spark/conf
+          - name: google-secret
+            mountPath: /opt/spark/google_sa.json
+            subPath: google_sa.json        
+        env:
+        - name: THRIFT_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: THRIFT_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+
+        ports:
+        - containerPort: 4040
+          name: spark-ui
+          protocol: TCP    
+        - containerPort: 10000
+          name: spark-thrift
+          protocol: TCP
+      serviceAccount: {{ include "spark-thrift-server.fullname" . }}-sa
+      serviceAccountName: {{ include "spark-thrift-server.fullname" . }}-sa
+      volumes:
+      - name: secret-files
+        secret:
+          secretName: {{ template "spark-thrift-server.fullname" . }}-secret
+      - name: google-secret
+        secret:
+          secretName: {{ template "spark-thrift-server.fullname" . }}-google-secret
+
+
+         
+
