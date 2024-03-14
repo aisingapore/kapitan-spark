@@ -1,0 +1,66 @@
+# Default values for jupyterlab.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+image:
+  repository: jupyter/minimal-notebook
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "python-3.10.11"
+  # pullSecrets:
+  # - name: myRegistryKeySecretName
+
+nameOverride: ""
+fullnameOverride: ""
+
+
+service:
+  type: ClusterIP # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
+  clusterIP: # optional no need value
+  nodePortLighterPort: 33001 # Only need to fill up if service type is NodePort
+  annotations: {}
+    # networking.gke.io/load-balancer-type: "Internal"
+    # service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+ingress:
+  enabled: true
+  annotations:
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+
+    # acme.cert-manager.io/http01-edit-in-place: "true"
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+    # cert-manager.io/issue-temporary-certificate: "true"
+    # kubernetes.io/ingress.class: nginx
+
+  host: # leave empty if do not have dns name
+  http:
+    paths: 
+    - backend:
+        service:
+          name: "{{ include \"jupyterlab.fullname\" . }}"
+          port:
+            number: 8888
+      path: /jupyterlab
+      pathType: ImplementationSpecific
+  tls: []
+    # - hosts:
+    #    - spark-thrift-server.begonia.aisingapore.net
+      #secretName: chart-example-tls
+
+resources: 
+  limits: {}
+  requests:
+      cpu: 0.25
+      memory: 512Mi
+
+# Jupyter password is generated using below python code 
+# from notebook.auth import passwd  
+# passwd("spark ecosystem")
+jupyterPassword: argon2:$argon2id$v=19$m=10240,t=10,p=8$rqX1GcIVDKwH73enY4FDXQ$WUxU8yQaMaIdp3CO14FGns74LzrxCGmqa3WwkZBe7jE   
+lighterPassword: 5Wmi95w4 # refer to lighter values.yaml on how to generate this password
+
+# Only need to fill in if install on isolated namespace
+lighter:
+    namespace: helmall # only need this value if install jupyter subchart standalone

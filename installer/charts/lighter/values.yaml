@@ -1,0 +1,94 @@
+image:
+  repository: ghcr.io/exacaster/lighter
+  pullPolicy: IfNotPresent
+  tag: "919-spark3.5.1"
+  # pullSecrets:
+  # - name: myRegistryKeySecretName
+  spark:
+     repository: ghcr.io/aisingapore/kapitan-spark/spark 
+     tag: 0.0.1-spark3.5.0
+     pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+resources:
+  limits: {}
+  requests:
+    cpu: 1
+    memory: 2Gi
+
+service:
+  type: ClusterIP # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
+  clusterIP: # optional no need value
+  nodePortLighterPort: 32001 # Only need to fill up if service type is NodePort
+  annotations: {}
+    # networking.gke.io/load-balancer-type: "Internal"
+    # service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+ingress:
+  enabled: true
+  annotations:
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+
+    # acme.cert-manager.io/http01-edit-in-place: "true"
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+    # cert-manager.io/issue-temporary-certificate: "true"
+    # kubernetes.io/ingress.class: nginx
+
+    # type of authentication
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: "{{ include \"lighter.fullname\" . }}-auth"
+    nginx.ingress.kubernetes.io/auth-secret-type: auth-map
+    nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required - please key in username and password'
+
+
+  host: # leave empty if do not have dns name
+  http:
+    paths: 
+    - backend:
+        service:
+          name: "{{ include \"lighter.fullname\" . }}"
+          port:
+            number: 8080
+      path: /lighter
+      pathType: ImplementationSpecific
+  tls: []
+    # - hosts:
+    #    - spark-thrift-server.begonia.aisingapore.net
+      #secretName: chart-example-tls
+
+lighter-postgresql:
+  image:
+      tag: 15.3.0-debian-11-r7
+  auth:
+      username: lighter
+      password: mU233@t3PqXP
+      database: lighter
+  
+s3a:
+  endpoint: https://empty
+
+spark:
+  history:
+      url: https://empty
+      eventLog:
+          enabled: true
+          usePVC: true # use Kubernetes Persistence volume, put false if using blob storage
+          dir: /opt/spark/event-logs # can also use blob storage s3a
+
+python:
+   user:
+     base: /opt/spark/work-dir/.python_libs # allow user to pip install -u <package> to this network file system shared folder
+
+# when using SparkFiles.getRootDirectory() 
+local:
+  dir: /opt/spark/work-dir
+
+passwordPairs:
+  dataOps: tuzr3bYvP1pq6 # output of openssl passwd -quiet <password> ; password is 5Wmi95w4
+
+# Only need to fill in if install on isolated namespace
+hiveMetastore:
+    namespace: helmall # only need this value if install spark thrift server subchart standalone

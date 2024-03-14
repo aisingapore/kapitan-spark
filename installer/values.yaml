@@ -1,0 +1,19 @@
+### Global Values if any #############
+global: 
+  isTopLevel: true # do not change this value !!! always true
+######################################
+
+hive-metastore:
+  enabled: true # base component needed by other components
+  
+spark-thrift-server:
+  enabled: true
+
+lighter:
+  enabled: true
+
+jupyterlab:
+  enabled: true
+
+spark-history-server:
+  enabled: true
