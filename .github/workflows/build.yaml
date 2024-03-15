@@ -22,6 +22,7 @@ jobs:
           kustomize: '5.3.0'
           helm: '3.14.3'
       - run: |
+          set -o pipefail
           cd kcustomize/example/prod
           helm template testing ../../../installer --post-renderer ./kustomize.sh --values ./values.yaml | kubeconform -kubernetes-version=1.29.0 -verbose
           
