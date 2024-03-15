@@ -1,6 +1,5 @@
 remote: origin
 target-branch: main
 chart-dirs:
-  - installer/charts/jupyterlab
+  - charts
 helm-extra-args: --timeout 600s
-check-version-increment: false
