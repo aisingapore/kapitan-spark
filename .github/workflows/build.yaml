@@ -1,0 +1,27 @@
+name: Validate Kubernetes Manifests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  kubeconform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: yokawasa/action-setup-kube-tools@v0.9.2
+        with:
+          setup-tools: |
+            kubeconform
+            kustomize
+          kubeconform: '0.6.4'
+          kustomize: '5.3.0'
+          helm: '3.14.3'
+      - run: |
+          cd kcustomize/example/prod
+          helm template testing ../../../installer --post-renderer ./kustomize.sh --values ./values.yaml | kubeconform -kubernetes-version=1.29.0 -verbose
+          
