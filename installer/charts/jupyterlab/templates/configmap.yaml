@@ -24,6 +24,8 @@ metadata:
     namespace: {{ .Release.Namespace }}
     labels:
         {{- include "jupyterlab.labels" $ | trim | nindent 4 }}
+        metadata:
+           test: error test
 data:
   sparkmagic: |
       {
