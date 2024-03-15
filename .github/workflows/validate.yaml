@@ -1,4 +1,4 @@
-name: Test Schema Suport for Kubernetes Versions
+name: Test Schema Support for Kubernetes Versions
 
 on:
   push:
