@@ -9,7 +9,7 @@ spec:
   selector:
     matchLabels:
       name: {{ include "jupyterlab.fullname" . }}
-  replicas: false
+  replicas: invalid_value
   strategy:
       rollingUpdate:
         maxUnavailable: 0
