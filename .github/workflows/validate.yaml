@@ -1,4 +1,4 @@
-name: Validate Kubernetes Manifests
+name: Test Schema Suport for Kubernetes Versions
 
 on:
   push:
