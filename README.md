@@ -1,4 +1,4 @@
-# Spark Ecosystem Installer - Welcome to Our All-in-One Spark Helm Installer Repository!
+# Kapitan Spark - All-in-One Spark Installer for Kubernetes!
 
 <img src="img/logo.gif" align="right"
      alt="Size Limit logo by Anton Lovchikov" width="120" height="178">
@@ -52,12 +52,12 @@ This method is ideal for individuals who possess some expertise in Kubernetes an
 
 2. Customize your components by enabling or disabling them in installer/values.yaml.
 
-3. Navigate to the directory `kcustomize/example/`, and modify `google-secret.yaml` and `values.yaml` files.
+3. Navigate to the directory `kcustomize/example/prod/`, and modify `google-secret.yaml` and `values.yaml` files.
 
-4. Execute the install command stated below in the folder kcustomize/example/, replacing `spark-bundle` with your preferred name. You can add `--dry-run=server` to test any error in helm files before installation:
+4. Execute the install command stated below in the folder kcustomize/example/prod/, replacing `spark-bundle` with your preferred name. You can add `--dry-run=server` to test any error in helm files before installation:
     ```sh
-    cd kcustomize/example/
-    helm install spark-bundle ../../installer --namespace sparkeco  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace
+    cd kcustomize/example/prod/
+    helm install spark-bundle ../../../installer --namespace sparkeco  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace
     ```
 
 5. After successful installation, you should be able to access the Jupyter Lab and Spark History Server based on your configuration of the Ingress section in `values.yaml`.
