@@ -1,7 +1,7 @@
 # Kapitan Spark - All-in-One Spark Installer for Kubernetes!
 
-<img src="img/logo.gif" align="right"
-     alt="Size Limit logo by Anton Lovchikov" width="120" height="178">
+<img src="img/logo.png">
+
 
 We're delighted to welcome you to this ultimate GitHub repository, a host for Helm multi-chart installer for Spark. Here, deploying essential Spark components on Kubernetes is made as simple as possible. With just Nginx and a ReadWriteMany (RWX) Persistent Volume ready, you're merely one Helm install command away from having your Spark components up and running!
 
