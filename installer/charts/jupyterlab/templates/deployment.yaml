@@ -10,7 +10,6 @@ spec:
     matchLabels:
       name: {{ include "jupyterlab.fullname" . }}
   replicas: 1
-  foo: bar
   strategy:
       rollingUpdate:
         maxUnavailable: 0
