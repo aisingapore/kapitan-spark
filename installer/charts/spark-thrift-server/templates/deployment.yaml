@@ -19,15 +19,22 @@
 
 {{- $hiveMetastoreServiceFullName := "" }}
 {{ if and .Values.global ( .Values.global.isTopLevel) }}
-      {{- $hiveMetastoreServiceFullName = printf "%s%s-hive-metastore." $hiveMetastoreServiceFullName .Release.Name -}}
+  {{- $hiveMetastoreServiceFullName = printf "%s%s-hive-metastore." $hiveMetastoreServiceFullName .Release.Name -}}
 {{ else }}
-      {{ required "hive metastore installed full service name required" $hiveMetastoreServiceName }}
+  {{- if not $hiveMetastoreServiceName }}
+    {{- fail "hive metastore installed full service name required" }}
+  {{- end }}
 {{ end }}
+
 {{ if and .Values.global ( .Values.global.isTopLevel) }}
-      {{- $hiveMetastoreServiceFullName = printf "%s%s.svc.cluster.local" $hiveMetastoreServiceFullName .Release.Namespace -}}
+  {{- $hiveMetastoreServiceFullName = printf "%s%s.svc.cluster.local" $hiveMetastoreServiceFullName .Release.Namespace -}}
 {{ else }}
-      {{ required "hive metastore installed namespace required" .Values.hiveMetastore.namespace }}
+  {{- if not .Values.hiveMetastore.namespace }}
+    {{- fail "hive metastore installed namespace required" }}
+  {{- end }}
 {{ end }}
+
+
       
 apiVersion: apps/v1
 kind: Deployment

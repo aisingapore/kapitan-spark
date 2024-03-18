@@ -9,10 +9,14 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  type: LoadBalancer # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
-  clusterIP: # optional no need value
-  nodePortSparkUIPort: 31001 # Only need to fill up if service type is NodePort
-  nodePortSparkThriftServerPort: 31002 # Only need to fill up if service type is NodePort
+  # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
+  type: LoadBalancer
+  # optional no need value
+  clusterIP:
+  # Only need to fill up if service type is NodePort
+  nodePortSparkUIPort: 31001
+  # Only need to fill up if service type is NodePort
+  nodePortSparkThriftServerPort: 31002
   annotations: {}
     # networking.gke.io/load-balancer-type: "Internal"
     # service.beta.kubernetes.io/azure-load-balancer-internal: "true"
@@ -28,10 +32,11 @@ ingress:
     # cert-manager.io/issue-temporary-certificate: "true"
     # kubernetes.io/ingress.class: nginx
 
-  host: # leave empty if do not have dns name
+  # leave empty if do not have dns name
+  host:
 
   http:
-    paths: 
+    paths:
     - backend:
         service:
           name: "{{ include \"spark-thrift-server.fullname\" . }}"
@@ -39,15 +44,15 @@ ingress:
             number: 4040
       path: /spark-thrift-server
       pathType: ImplementationSpecific
-  
+
   tls: []
     # - hosts:
     #    - spark-thrift-server.begonia.aisingapore.net
-      #secretName: chart-example-tls
-     
-# Optional, just leave the value as empty 
+    # secretName: chart-example-tls
+# Optional, just leave the value as empty
 warehouse:
-    dir: # can use PVC/blob storage
+  # can use PVC/blob storage
+  dir:
 s3a:
   accessKey: empty
   secretKey: empty
@@ -56,4 +61,5 @@ s3a:
 
 # Only need to fill in if install on isolated namespace
 hiveMetastore:
-    namespace: hive-metastore # only need this value if install spark thrift server subchart standalone
+  # only need this value if install spark thrift server subchart standalone
+  namespace: hive-metastore

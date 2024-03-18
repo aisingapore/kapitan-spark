@@ -1,9 +1,0 @@
-dependencies:
-- name: spark-thrift-server
-  repository: file://charts/spark-thrift-server
-  version: 0.1.0
-- name: hive-metastore
-  repository: file://charts/hive-metastore
-  version: 0.1.0
-digest: sha256:867ce5dfedb035f1d3904b1998d37d30bad7fa866b417e48e7e2c20182136e47
-generated: "2023-11-21T15:55:24.968452+08:00"
