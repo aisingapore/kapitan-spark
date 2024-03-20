@@ -65,6 +65,16 @@ This method is ideal for individuals who possess some expertise in Kubernetes an
 
 6. After successful installation, you should be able to access the Jupyter Lab, Spark History Server and Lighter UI based on your configuration of the Ingress section in `values.yaml`.
 
+
+
+
+### Compatibility 
+| Syntax      | Description |
+| ----------- | ----------- |
+| Kubernetes      | 1.23.0 >= 1.29.0       |
+| Helm   | 3.        |
+
+
 ### Component 
 <details><summary><b>Remarks</b></summary>
 
