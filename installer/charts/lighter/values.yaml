@@ -75,7 +75,7 @@ s3a:
 
 spark:
   history:
-    url: https://empty
+    url:
     eventLog:
       enabled: true
       # use Kubernetes Persistence volume, put false if using blob storage
