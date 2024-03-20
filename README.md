@@ -2,7 +2,6 @@
 
 <img src="img/logo.png">
 
-
 We're delighted to welcome you to this ultimate GitHub repository, a host for Helm multi-chart installer for Spark. Here, deploying essential Spark components on Kubernetes is made as simple as possible. With just Nginx and a ReadWriteMany (RWX) Persistent Volume ready, you're merely one Helm install command away from having your Spark components up and running!
 
 This repository includes indispensable components like Hive Metastore, Spark Thrift Server, Lighter, Jupyter Lab, and the Spark History Server. You have the freedom to select required components for installation from the config file installer/values.yaml.
@@ -13,7 +12,7 @@ For installing standalone components, navigate to the desired individual charts/
 
 The customization of Helm values.yaml can be done by passing ---values new_values.yaml file during installation. Similarly, if you want to modify any *.yaml file in the template/ folder, you can do this by passing --post-renderer ./kustomize.sh. Refer to the example command in the sections below for practical guidance. This approach prevents you from modifying the original source code and enables you to customize as per your organisation's needs.
 
-We encourage you to explore, adapt and utilize this repository to its fullest potential. It's time you experienced a remarkably effortless Spark component installation. Happy coding!
+We encourage you to explore, adapt and utilize this repository to its fullest potential. It's time you experienced a remarkably effortless Spark component installation.
 
 
 ## Usage
@@ -40,6 +39,7 @@ Suitable for starters with little knowledge on Kubernetes and Helm. Can also ins
 4. you should able to access 
     - Jupyter lab at http://KUBERNETES_NODE_IP/jupyterlab 
     - Spark History Server at http://KUBERNETES_NODE_IP/spark-history-server
+    - Lighter UI http://KUBERNETES_NODE_IP/lighter 
 </details>
 
 
@@ -60,7 +60,7 @@ This method is ideal for individuals who possess some expertise in Kubernetes an
     helm install spark-bundle ../../../installer --namespace sparkeco  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace
     ```
 
-5. After successful installation, you should be able to access the Jupyter Lab and Spark History Server based on your configuration of the Ingress section in `values.yaml`.
+5. After successful installation, you should be able to access the Jupyter Lab, Spark History Server and Lighter UI based on your configuration of the Ingress section in `values.yaml`.
 
 ### Component 
 <details><summary><b>Remarks</b></summary>
@@ -80,6 +80,7 @@ This method is ideal for individuals who possess some expertise in Kubernetes an
     - Utilize `spark_docker_image/Dockerfile` for rebuilding. After rebuilding, modify `image.spark.repository`, `image.spark.tag` in `values.yaml`.
     - If Spark history uses Persistence Volume to save event log instead of Blob storage S3a, ensure to install it with `spark-history-server` component on the same Kubernetes namespace.
     - Dependencies: `hive-metastore` and `spark-history-server` components. The latter can be turned off in `values.yaml`.
+    - Default user: `dataOps` password: `5Wmi95w4`
 
 - Spark History Server
     - By default, Persitence volume is used to read event log, to change update the `dir` key in `values.yaml` and in the `lighter` component, update `spark.history.eventLog.dir` key.
