@@ -22,7 +22,7 @@ Suitable for starters with little knowledge on Kubernetes and Helm. Can also ins
 
 <details><summary><b>Show instructions</b></summary>
 
-1. If you are using Microk8s, below are the steps to install Nginx and PV with RWX:
+1. If you are using Microk8s, below are the steps to install Nginx and PV with RWX support:
 
     ```sh
     microk8s enable hostpath-storage
