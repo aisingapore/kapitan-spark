@@ -55,13 +55,15 @@ This method is ideal for individuals who possess some expertise in Kubernetes an
 
 3. Navigate to the directory `kcustomize/example/prod/`, and modify `google-secret.yaml` and `values.yaml` files.
 
-4. Execute the install command stated below in the folder kcustomize/example/prod/, replacing `spark-bundle` with your preferred name. You can add `--dry-run=server` to test any error in helm files before installation:
+4. Modify `jupyterlab/requirements.txt` according to your project before installation
+
+5. Execute the install command stated below in the folder kcustomize/example/prod/, replacing `spark-bundle` with your preferred name. You can add `--dry-run=server` to test any error in helm files before installation:
     ```sh
     cd kcustomize/example/prod/
     helm install spark-bundle ../../../installer --namespace kapitanspark  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace
     ```
 
-5. After successful installation, you should be able to access the Jupyter Lab, Spark History Server and Lighter UI based on your configuration of the Ingress section in `values.yaml`.
+6. After successful installation, you should be able to access the Jupyter Lab, Spark History Server and Lighter UI based on your configuration of the Ingress section in `values.yaml`.
 
 ### Component 
 <details><summary><b>Remarks</b></summary>
