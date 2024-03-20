@@ -48,7 +48,7 @@ This method is ideal for individuals who possess some expertise in Kubernetes an
 
 <details><summary><b>Show instructions</b></summary>
 
-1. Pre-installation step includes having existing Kubernetes with Nginx and Persistence Volume with RWX support.
+1. Pre-installation step for existing Kubernetes with Nginx and Persistence Volume having RWX storage class supported (Example NFS or Longhorn).
 
 2. Customize your components by enabling or disabling them in installer/values.yaml.
 
