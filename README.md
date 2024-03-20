@@ -34,12 +34,13 @@ Suitable for starters with little knowledge on Kubernetes and Helm. Can also ins
 3. Run the following install command, where `spark-bundle` is the name you prefer:
 
     ```sh
-    helm install spark-bundle installer --namespace sparkeco --create-namespace
+    helm install spark-bundle installer --namespace kapitanspark --create-namespace
     ```
-4. you should able to access 
+4. Run the command `kubectl get ingress --namespace kapitanspark` to get IP address of KUBERNETES_NODE_IP. After that you can access 
     - Jupyter lab at http://KUBERNETES_NODE_IP/jupyterlab 
     - Spark History Server at http://KUBERNETES_NODE_IP/spark-history-server
     - Lighter UI http://KUBERNETES_NODE_IP/lighter 
+
 </details>
 
 
@@ -57,7 +58,7 @@ This method is ideal for individuals who possess some expertise in Kubernetes an
 4. Execute the install command stated below in the folder kcustomize/example/prod/, replacing `spark-bundle` with your preferred name. You can add `--dry-run=server` to test any error in helm files before installation:
     ```sh
     cd kcustomize/example/prod/
-    helm install spark-bundle ../../../installer --namespace sparkeco  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace
+    helm install spark-bundle ../../../installer --namespace kapitanspark  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace
     ```
 
 5. After successful installation, you should be able to access the Jupyter Lab, Spark History Server and Lighter UI based on your configuration of the Ingress section in `values.yaml`.
