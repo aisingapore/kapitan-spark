@@ -1,4 +1,5 @@
-*.tgz
+!installer/*.tgz
 kcustomize/gcp/
 kcustomize/on-prem/
-img/*
+.vscode
+

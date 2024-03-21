@@ -16,9 +16,12 @@ fullnameOverride: ""
 
 
 service:
-  type: ClusterIP # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
-  clusterIP: # optional no need value
-  nodePortLighterPort: 33001 # Only need to fill up if service type is NodePort
+  # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
+  type: ClusterIP
+  # optional no need value
+  clusterIP:
+  # Only need to fill up if service type is NodePort
+  nodePortLighterPort: 33001
   annotations: {}
     # networking.gke.io/load-balancer-type: "Internal"
     # service.beta.kubernetes.io/azure-load-balancer-internal: "true"
@@ -34,9 +37,10 @@ ingress:
     # cert-manager.io/issue-temporary-certificate: "true"
     # kubernetes.io/ingress.class: nginx
 
-  host: # leave empty if do not have dns name
+  # leave empty if do not have dns name
+  host:
   http:
-    paths: 
+    paths:
     - backend:
         service:
           name: "{{ include \"jupyterlab.fullname\" . }}"
@@ -47,20 +51,22 @@ ingress:
   tls: []
     # - hosts:
     #    - spark-thrift-server.begonia.aisingapore.net
-      #secretName: chart-example-tls
+    #   secretName: chart-example-tls
 
-resources: 
+resources:
   limits: {}
   requests:
-      cpu: 0.25
-      memory: 512Mi
+    cpu: 0.25
+    memory: 512Mi
 
-# Jupyter password is generated using below python code 
-# from notebook.auth import passwd  
+# Jupyter password is generated using below python code
+# from notebook.auth import passwd
 # passwd("spark ecosystem")
-jupyterPassword: argon2:$argon2id$v=19$m=10240,t=10,p=8$rqX1GcIVDKwH73enY4FDXQ$WUxU8yQaMaIdp3CO14FGns74LzrxCGmqa3WwkZBe7jE   
-lighterPassword: 5Wmi95w4 # refer to lighter values.yaml on how to generate this password
+jupyterPassword: argon2:$argon2id$v=19$m=10240,t=10,p=8$rqX1GcIVDKwH73enY4FDXQ$WUxU8yQaMaIdp3CO14FGns74LzrxCGmqa3WwkZBe7jE
+# refer to lighter values.yaml on how to generate this password
+lighterPassword: 5Wmi95w4
 
 # Only need to fill in if install on isolated namespace
 lighter:
-    namespace: helmall # only need this value if install jupyter subchart standalone
+  # only need this value if install jupyter subchart standalone
+  namespace: helmall

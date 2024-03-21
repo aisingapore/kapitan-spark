@@ -26,12 +26,11 @@ service:
 
 hive-metastore-postgresql:
   image:
-      tag: 15.3.0-debian-11-r7
+    tag: 15.3.0-debian-11-r7
   auth:
-      username: hive
-      password: E9mZ424xCUt3
-      database: metastore
-  
+    username: hive
+    password: E9mZ424xCUt3
+    database: metastore
 
 ## Resource requests and limits: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
 resources:
