@@ -22,15 +22,12 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 appVersion: 1.16.0
 
+maintainers:
+  - name: DataOps
+    email: dataops@aisingapore.org
 
 dependencies:
   - name: postgresql
     version: "13.2.9"
     repository: "@bitnami"
     alias: hive-metastore-postgresql
-
-
-
-
-
-
