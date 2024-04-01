@@ -66,8 +66,12 @@ This method is ideal for individuals who possess some expertise in Kubernetes an
     cd kcustomize/example/prod/
     helm install spark-bundle ../../../installer --namespace kapitanspark  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace
     ```
+6. If any errors occur during the installation step, run the command below to uninstall it. The `--wait` flag will ensure all pods are removed.
+   ```sh
+   helm uninstall spark-bundle --namespace kapitanspark --wait
+   ```
 
-6. After successful installation, you should be able to access the Jupyter Lab, Spark History Server and Lighter UI based on your configuration of the Ingress section in `values.yaml`.
+7. After successful installation, you should be able to access the Jupyter Lab, Spark History Server and Lighter UI based on your configuration of the Ingress section in `values.yaml`.
 
 
 </details>
