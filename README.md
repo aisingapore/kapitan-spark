@@ -36,7 +36,11 @@ Suitable for starters with little knowledge on Kubernetes and Helm. Can also ins
     ```sh
     helm install spark-bundle installer --namespace kapitanspark --create-namespace
     ```
-4. Run the command `kubectl get ingress --namespace kapitanspark` to get IP address of KUBERNETES_NODE_IP. For default password, please refer to component section in this document. After that you can access 
+4. If any errors occur during the installation step, run the command below to uninstall it. The `--wait` flag will ensure all pods are removed.
+   ```sh
+   helm uninstall spark-bundle --namespace kapitanspark --wait
+   ```
+5. Run the command `kubectl get ingress --namespace kapitanspark` to get IP address of KUBERNETES_NODE_IP. For default password, please refer to component section in this document. After that you can access 
     - Jupyter lab at http://KUBERNETES_NODE_IP/jupyterlab 
     - Spark History Server at http://KUBERNETES_NODE_IP/spark-history-server
     - Lighter UI http://KUBERNETES_NODE_IP/lighter 
