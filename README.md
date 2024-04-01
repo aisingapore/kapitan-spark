@@ -2,7 +2,7 @@
 
 <img src="img/logo.png">
 
-We're delighted to welcome you to this ultimate GitHub repository, a host for Helm multi-chart installer for Spark. Here, deploying essential Spark components on Kubernetes is made as simple as possible. With just Nginx and a ReadWriteMany (RWX) Persistent Volume ready, you're merely one Helm install command away from having your Spark components up and running!
+We're delighted to welcome you to Helm multi-chart installer for Spark. Here, deploying essential Spark components on Kubernetes is made as simple as possible. With just Nginx and a ReadWriteMany (RWX) Persistent Volume ready, you're merely one Helm install command away from having your Spark components up and running!
 
 This repository includes indispensable components like Hive Metastore, Spark Thrift Server, Lighter, Jupyter Lab, and the Spark History Server. You have the freedom to select required components for installation from the config file installer/values.yaml.
 
