@@ -15,5 +15,8 @@ ADD --chown=spark:spark https://repo1.maven.org/maven2/com/amazonaws/aws-java-sd
 # Adding GCS Connector for Spark
 ADD --chown=spark:spark https://repo1.maven.org/maven2/com/google/cloud/bigdataoss/gcs-connector/hadoop3-2.2.15/gcs-connector-hadoop3-2.2.15-shaded.jar $SPARK_HOME/jars
 
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
+
 USER spark
 WORKDIR /opt/spark/work-dir
