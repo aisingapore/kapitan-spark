@@ -1,7 +1,7 @@
 hive-metastore:
     image:
       repository: ghcr.io/aisingapore/kapitan-spark/hive-metastore
-      tag: 0.0.2-hadoop3.3.4
+      tag: 0.0.3-hadoop3.3.4
       pullPolicy: Always
       # pullSecrets:
       # - name: myRegistryKeySecretName
@@ -49,7 +49,7 @@ spark-thrift-server:
     image:
       repository: ghcr.io/aisingapore/kapitan-spark/spark
       pullPolicy: IfNotPresent
-      tag: 0.0.2-spark3.5.0
+      tag: 0.0.3-spark3.5.0
       # pullSecrets:
       # - name: myRegistryKeySecretName
 lighter:
@@ -101,7 +101,7 @@ lighter:
         # - name: myRegistryKeySecretName
       spark:
           repository: ghcr.io/aisingapore/kapitan-spark/spark 
-          tag: 0.0.2-spark3.5.0
+          tag: 0.0.3-spark3.5.0
           pullPolicy: IfNotPresent
 
 jupyterlab:
@@ -151,7 +151,7 @@ spark-history-server:
       repository: ghcr.io/aisingapore/kapitan-spark/spark
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: 0.0.2-spark3.5.0
+      tag: 0.0.3-spark3.5.0
       # pullSecrets:
       # - name: myRegistryKeySecretName
 
