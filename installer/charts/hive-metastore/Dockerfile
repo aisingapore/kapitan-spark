@@ -12,9 +12,11 @@ RUN apt-get update && \
 
 
 # Install Gomplate
-RUN curl -sfSL https://github.com/hairyhenderson/gomplate/releases/download/v3.11.2/gomplate_linux-amd64 \
-      -o /usr/local/bin/gomplate \
-    && chmod 755 /usr/local/bin/gomplate
+# RUN curl -sfSL https://github.com/hairyhenderson/gomplate/releases/download/v3.11.2/gomplate_linux-amd64 \
+#       -o /usr/local/bin/gomplate \
+#     && chmod 755 /usr/local/bin/gomplate
+COPY --from=hairyhenderson/gomplate:stable /gomplate /usr/local/bin/gomplate
+RUN chmod 755 /usr/local/bin/gomplate
 
 RUN useradd --create-home appuser
 USER appuser
