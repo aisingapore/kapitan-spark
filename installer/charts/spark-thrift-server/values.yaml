@@ -1,7 +1,7 @@
 image:
   repository: ghcr.io/aisingapore/kapitan-spark/spark
   pullPolicy: IfNotPresent
-  tag: 0.0.2-spark3.5.0
+  tag: 0.0.3-spark3.5.0
   # pullSecrets:
   # - name: myRegistryKeySecretName
 

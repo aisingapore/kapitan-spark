@@ -11,7 +11,7 @@ replicaCount: 1
 ## Default Hive image and tag. Please build image locally before applying this.
 image:
   repository: ghcr.io/aisingapore/kapitan-spark/hive-metastore
-  tag: 0.0.2-hadoop3.3.4
+  tag: 0.0.3-hadoop3.3.4
   pullPolicy: Always
   # pullSecrets:
   # - name: myRegistryKeySecretName
