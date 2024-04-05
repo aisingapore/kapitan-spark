@@ -76,6 +76,8 @@ spec:
             - name: pip-file
               mountPath: /tmp/requirements.txt
               subPath: requirements.txt
+            - name: persist-notebooks
+              mountPath: /home/jovyan/work
 
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
@@ -89,4 +91,7 @@ spec:
         - name: pip-file
           configMap:
             name: {{ template "jupyterlab.fullname" . }}-pip-file
-
+        - name: persist-notebooks
+          persistentVolumeClaim:
+              claimName: {{ include "jupyterlab.fullname" . }}-persist-notebooks
+      
