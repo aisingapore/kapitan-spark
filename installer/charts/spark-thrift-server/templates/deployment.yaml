@@ -60,7 +60,7 @@ spec:
       initContainers:
         - name: check-hive-metastore
           image: busybox:1.35.0
-          command: ['sh', '-c', "until nslookup {{$hiveMetastoreServiceFullName}}; do echo waiting for {{$hiveMetastoreServiceFullName}}; sleep 2; done"]
+          command: ['sh', '-c', "until nslookup {{$hiveMetastoreServiceFullName}}; do echo waiting for {{$hiveMetastoreServiceFullName}}; sleep 5; done"]
         - name: check-hive-metastore-port
           image: busybox:1.35.0
           command:
@@ -69,7 +69,7 @@ spec:
             - >
               until echo 'quit' | telnet {{$hiveMetastoreServiceFullName}} 9083;
               do
-                sleep 2;
+                sleep 5;
               done
       containers:
       - name: {{ .Chart.Name }}
