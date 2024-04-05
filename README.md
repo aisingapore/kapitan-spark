@@ -42,51 +42,29 @@ Requirements:
 - Ingress
 - Storage that support `ReadWriteMany`
 
-<details><summary><b>Show instructions</b></summary>
+<!-- <details><summary><b>Show instructions</b></summary> -->
 
 
 
-#### (Optional) Setup of Local Kubernetes Cluster
-You may skip the local setup if you already an existing kubernetes cluster you would like to use
-
-
-<details><summary>See details of setup for `microk8s` </summary>
-At the moment, we have only tested this locally using `microk8s` and `minikube` 
-
-1. If you are using Microk8s, below are the steps to install Nginx and PV with RWX support:
-
-    ```sh
-    microk8s install --cpu 8 --mem 12 --disk 50
-    microk8s enable hostpath-storage
-    microk8s enable ingress
-    
-    #output your kubeconfig using this command
-    microk8s config
-
-    # update ~/.kube/config to add the config above to access this kubernetes cluster via kubectl
-    
-    ```
-
-</details>
 
 #### Installation of Helm Chart
-2. Choose which components you need by enabling/disabling them at `installer/values.yaml`.
+1. Choose which components you need by enabling/disabling them at `installer/values.yaml`.
 
-3. Run the following install command, where `spark-bundle` is the name you prefer:
+1. Run the following install command, where `spark-bundle` is the name you prefer:
 
     ```sh
     helm install spark-bundle installer --namespace kapitanspark --create-namespace
     ```
-4. If any errors occur during the installation step, run the command below to uninstall it. The `--wait` flag will ensure all pods are removed.
+1. If any errors occur during the installation step, run the command below to uninstall it. The `--wait` flag will ensure all pods are removed.
    ```sh
    helm uninstall spark-bundle --namespace kapitanspark --wait
    ```
-5. Run the command `kubectl get ingress --namespace kapitanspark` to get IP address of KUBERNETES_NODE_IP. For default password, please refer to component section in this document. After that you can access 
+1. Run the command `kubectl get ingress --namespace kapitanspark` to get IP address of KUBERNETES_NODE_IP. For default password, please refer to component section in this document. After that you can access 
     - Jupyter lab at http://KUBERNETES_NODE_IP/jupyterlab 
     - Spark History Server at http://KUBERNETES_NODE_IP/spark-history-server
     - Lighter UI http://KUBERNETES_NODE_IP/lighter 
 
-</details>
+<!-- </details> -->
 
 
 
@@ -95,6 +73,13 @@ At the moment, we have only tested this locally using `microk8s` and `minikube`
 | ----------- | ----------- |
 | Kubernetes      | 1.23.0 >= 1.29.0       |
 | Helm   | 3        |
+
+### Resource Requirements
+| Resource     | Description | Remarks |
+| ----------- | -----------  |----------- |
+| CPU         | 8 Cores      |            |
+| Memory      | 12 GB        |            |
+| Disk        | 40 GB        | Adjust this based on the size of your Spark docker images |
 
 
 ### Component Details and Defaults
@@ -166,7 +151,9 @@ If you want to install each component separately, you can also navigate to the i
 
 You may create multiple instances of this Helm Chart by specifying a different Helm Chart name, for example : production, staging and testing environments.
 
-<details><summary><b>Show sample commands</b></summary>
+You may need to adjust the Spark Thrift Server Port Number if you are installing 2 instances on the same cluster.
+
+<details><summary><b>Show Sample Commands to Create Multiple Instances</b></summary>
 
 ```bash 
 helm install spark-production installer --namespace kapitanspark-prod --create-namespace
@@ -207,4 +194,29 @@ Requirements:
 
 </details>
 
+
+### (Optional) Setup of Local Kubernetes Cluster
+You may skip the local setup if you already an existing kubernetes cluster you would like to use
+
+
+<details><summary>See details of setup for microk8s </summary>
+    
+At the moment, we have only tested this locally using `microk8s`. Refer to the installation steps on [microk8s docs](https://microk8s.io/docs/getting-started)
+
+If you are using Microk8s, below are the steps to install Nginx and PV with RWX support:
+
+    ```sh
+    # the requirements stated below are the minimum, feel free to adjust upwards as needed
+    microk8s install --cpu 8 --mem 12 --disk 40
+    microk8s enable hostpath-storage
+    microk8s enable ingress
+    
+    #output your kubeconfig using this command
+    microk8s config
+
+    # update ~/.kube/config to add the config above to access this kubernetes cluster via kubectl
+    
+    ```
+
+</details>
 
