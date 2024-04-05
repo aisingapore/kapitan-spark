@@ -26,51 +26,6 @@ We invite you to try this out and let us know any issues/feedback you have via G
 
 
 
-## Customisation of the Helm Chart
-
-This helm chart supports various methods of customization
-1. Modifying `values.yaml`
-2. Providing a new `values.yaml` file
-3. Using Kustomize
-
-<details><summary>Show Details of Customization</summary>
-
-### Customising values.yaml
-You may customise your installation of the above components by editing the file at [installer/values.yaml](installer/values.yaml).
-
-### Alternative Values File
-Alternatively, you can create a copy of the values file and run the following modified command
-```bash
- helm install spark-bundle installer --values new_values.yaml --namespace kapitanspark --create-namespace
- ```
-
-### Using Kustomize :
-This approach prevents you from modifying the original source code and enables you to customize as per your needs.
-
-You may refer to this section [Advanced Installation](#advanced-installation)
-</details>
-
-
-### Installing Components Separately
-
-If you want to install each component separately, you can also navigate to the individual chart folder and run `helm install` as needed.
-
-### Creating Multiple Instances 
-
-You may create multiple instances of this Helm Chart by specifying a different Helm Chart name, for example : production, staging and testing environments.
-
-<details><summary><b>Show sample commands</b></summary>
-
-```bash 
-helm install spark-production installer --namespace kapitanspark-prod --create-namespace
-```
-
-```bash 
-helm install spark-testing installer --namespace kapitanspark-test --create-namespace
-```
-
-</details>
-
 
 
 
@@ -101,8 +56,15 @@ At the moment, we have only tested this locally using `microk8s` and `minikube`
 1. If you are using Microk8s, below are the steps to install Nginx and PV with RWX support:
 
     ```sh
+    microk8s install --cpu 8 --mem 12 --disk 50
     microk8s enable hostpath-storage
     microk8s enable ingress
+    
+    #output your kubeconfig using this command
+    microk8s config
+
+    # update ~/.kube/config to add the config above to access this kubernetes cluster via kubectl
+    
     ```
 
 </details>
@@ -127,36 +89,6 @@ At the moment, we have only tested this locally using `microk8s` and `minikube`
 </details>
 
 
-### Advanced Installation and Customisation
-This method is ideal for advanced users who have some expertise in Kubernetes and Helm. 
-This approach enables you to extend existing configurations efficiently for your needs, without modifying the existing source code.
-
-<details><summary><b>Show instructions</b></summary>
-
-Requirements:
-- Ingress (Nginx)
-- Storage that support `ReadWriteMany` , eg: NFS or Longhorn NFS
-
-1. Customize your components by enabling or disabling them in `installer/values.yaml`
-
-2. Navigate to the directory `kcustomize/example/prod/`, and modify `google-secret.yaml` and `values.yaml` files.
-
-3. Modify `jupyterlab/requirements.txt` according to your project before installation
-
-4. Execute the install command stated below in the folder `kcustomize/example/prod/`, replacing `spark-bundle` with your preferred name. You can add `--dry-run=server` to test any error in helm files before installation:
-    ```sh
-    cd kcustomize/example/prod/
-    helm install spark-bundle ../../../installer --namespace kapitanspark  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace
-    ```
-5. If any errors occur during the installation step, run the command below to uninstall it. The `--wait` flag will ensure all pods are removed.
-   ```sh
-   helm uninstall spark-bundle --namespace kapitanspark --wait
-   ```
-
-6. After successful installation, you should be able to access the Jupyter Lab, Spark History Server and Lighter UI based on your configuration of the Ingress section in `values.yaml`.
-
-
-</details>
 
 ### Compatibility 
 | Syntax      | Description |
@@ -196,4 +128,83 @@ Requirements:
 
 
 
-----
+### Advanced Installation and Customisation
+This method is ideal for advanced users who have some expertise in Kubernetes and Helm. 
+This approach enables you to extend existing configurations efficiently for your needs, without modifying the existing source code.
+
+
+#### Customisation of the Helm Chart
+
+This helm chart supports various methods of customization
+1. Modifying `values.yaml`
+2. Providing a new `values.yaml` file
+3. Using Kustomize
+
+<details><summary>Show Details of Customization</summary>
+
+##### Customising values.yaml
+You may customise your installation of the above components by editing the file at [installer/values.yaml](installer/values.yaml).
+
+##### Alternative Values File
+Alternatively, you can create a copy of the values file and run the following modified command
+```bash
+ helm install spark-bundle installer --values new_values.yaml --namespace kapitanspark --create-namespace
+ ```
+
+##### Using Kustomize :
+This approach prevents you from modifying the original source code and enables you to customize as per your needs.
+
+You may refer to this section [Advanced Installation](#advanced-installation)
+</details>
+
+
+##### Installing Components Separately
+
+If you want to install each component separately, you can also navigate to the individual chart folder and run `helm install` as needed.
+
+##### Creating Multiple Instances 
+
+You may create multiple instances of this Helm Chart by specifying a different Helm Chart name, for example : production, staging and testing environments.
+
+<details><summary><b>Show sample commands</b></summary>
+
+```bash 
+helm install spark-production installer --namespace kapitanspark-prod --create-namespace
+```
+
+```bash 
+helm install spark-testing installer --namespace kapitanspark-test --create-namespace
+```
+
+</details>
+
+
+
+<details><summary><b>Show Customised Install Instructions </b></summary>
+
+Requirements:
+- Ingress (Nginx)
+- Storage that support `ReadWriteMany` , eg: NFS or Longhorn NFS
+
+1. Customize your components by enabling or disabling them in `installer/values.yaml`
+
+2. Navigate to the directory `kcustomize/example/prod/`, and modify `google-secret.yaml` and `values.yaml` files.
+
+3. Modify `jupyterlab/requirements.txt` according to your project before installation
+
+4. Execute the install command stated below in the folder `kcustomize/example/prod/`, replacing `spark-bundle` with your preferred name. You can add `--dry-run=server` to test any error in helm files before installation:
+    ```sh
+    cd kcustomize/example/prod/
+    helm install spark-bundle ../../../installer --namespace kapitanspark  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace
+    ```
+5. If any errors occur during the installation step, run the command below to uninstall it. The `--wait` flag will ensure all pods are removed.
+   ```sh
+   helm uninstall spark-bundle --namespace kapitanspark --wait
+   ```
+
+6. After successful installation, you should be able to access the Jupyter Lab, Spark History Server and Lighter UI based on your configuration of the Ingress section in `values.yaml`.
+
+
+</details>
+
+
