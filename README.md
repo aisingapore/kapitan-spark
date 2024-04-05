@@ -205,18 +205,17 @@ At the moment, we have only tested this locally using `microk8s`. Refer to the i
 
 If you are using Microk8s, below are the steps to install Nginx and PV with RWX support:
 
-    ```sh
-    # the requirements stated below are the minimum, feel free to adjust upwards as needed
-    microk8s install --cpu 8 --mem 12 --disk 40
-    microk8s enable hostpath-storage
-    microk8s enable ingress
-    
-    #output your kubeconfig using this command
-    microk8s config
+```sh
+# the requirements stated below are the minimum, feel free to adjust upwards as needed
+microk8s install --cpu 8 --mem 12 --disk 40
+microk8s enable hostpath-storage
+microk8s enable ingress
 
-    # update ~/.kube/config to add the config above to access this kubernetes cluster via kubectl
-    
-    ```
+#output your kubeconfig using this command
+microk8s config
+
+# update ~/.kube/config to add the config above to access this kubernetes cluster via kubectl
+```
 
 </details>
 
