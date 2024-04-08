@@ -50,16 +50,12 @@ Requirements:
 #### Installation of Helm Chart
 1. Choose which components you need by enabling/disabling them at `installer/values.yaml`.
 
-1. Run the following install command, where `spark-bundle` is the name you prefer:
+2. Run the following install command, where `spark-bundle` is the name you prefer:
 
     ```sh
     helm install spark-bundle installer --namespace kapitanspark --create-namespace --atomic
     ```
-1. If any errors occur during the installation step, run the command below to uninstall it. The `--wait` flag will ensure all pods are removed.
-   ```sh
-   helm uninstall spark-bundle --namespace kapitanspark --wait
-   ```
-1. Run the command `kubectl get ingress --namespace kapitanspark` to get IP address of KUBERNETES_NODE_IP. For default password, please refer to component section in this document. After that you can access 
+3. Run the command `kubectl get ingress --namespace kapitanspark` to get IP address of KUBERNETES_NODE_IP. For default password, please refer to component section in this document. After that you can access 
     - Jupyter lab at http://KUBERNETES_NODE_IP/jupyterlab 
     - Spark History Server at http://KUBERNETES_NODE_IP/spark-history-server
     - Lighter UI http://KUBERNETES_NODE_IP/lighter 
@@ -184,12 +180,8 @@ Requirements:
     cd kcustomize/example/prod/
     helm install spark-bundle ../../../installer --namespace kapitanspark  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace --atomic
     ```
-5. If any errors occur during the installation step, run the command below to uninstall it. The `--wait` flag will ensure all pods are removed.
-   ```sh
-   helm uninstall spark-bundle --namespace kapitanspark --wait
-   ```
 
-6. After successful installation, you should be able to access the Jupyter Lab, Spark History Server and Lighter UI based on your configuration of the Ingress section in `values.yaml`.
+5. After successful installation, you should be able to access the Jupyter Lab, Spark History Server and Lighter UI based on your configuration of the Ingress section in `values.yaml`.
 
 
 </details>
