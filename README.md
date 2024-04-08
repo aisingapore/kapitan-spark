@@ -48,14 +48,14 @@ Requirements:
 
 
 #### Installation of Helm Chart
-1. Choose which components you need by enabling/disabling them at `installer/values.yaml`.
+<!-- 1. Choose which components you need by enabling/disabling them at `installer/values.yaml`. -->
 
-2. Run the following install command, where `spark-bundle` is the name you prefer:
+1. Run the following install command, where `spark-bundle` is the name you prefer:
 
     ```sh
     helm install spark-bundle installer --namespace kapitanspark --create-namespace --atomic
     ```
-3. Run the command `kubectl get ingress --namespace kapitanspark` to get IP address of KUBERNETES_NODE_IP. For default password, please refer to component section in this document. After that you can access 
+1. Run the command `kubectl get ingress --namespace kapitanspark` to get IP address of KUBERNETES_NODE_IP. For default password, please refer to component section in this document. After that you can access 
     - Jupyter lab at http://KUBERNETES_NODE_IP/jupyterlab 
     - Spark History Server at http://KUBERNETES_NODE_IP/spark-history-server
     - Lighter UI http://KUBERNETES_NODE_IP/lighter 
@@ -132,10 +132,10 @@ Alternatively, you can create a copy of the values file and run the following mo
  helm install spark-bundle installer --values new_values.yaml --namespace kapitanspark --create-namespace --atomic
  ```
 
-##### Using Kustomize :
+##### Configuration Using Kustomize :
 This approach prevents you from modifying the original source code and enables you to customize as per your needs.
 
-You may refer to this section [Advanced Installation](#advanced-installation)
+You may refer to this section [Using Kustomize](#using-kustomize-to-modify-configuration)
 </details>
 
 
@@ -149,7 +149,7 @@ You may create multiple instances of this Helm Chart by specifying a different H
 
 You may need to adjust the Spark Thrift Server Port Number if you are installing 2 instances on the same cluster.
 
-<details><summary><b>Show Sample Commands to Create Multiple Instances</b></summary>
+<details><summary>Show Sample Commands to Create Multiple Instances</summary>
 
 ```bash 
 helm install spark-production installer --namespace kapitanspark-prod --create-namespace --atomic
@@ -162,8 +162,8 @@ helm install spark-testing installer --namespace kapitanspark-test --create-name
 </details>
 
 
-
-<details><summary><b>Show Customised Install Instructions </b></summary>
+##### Using Kustomize to modify configuration 
+<details><summary>Show Customised Install Instructions </summary>
 
 Requirements:
 - Ingress (Nginx)
