@@ -31,8 +31,6 @@ We invite you to try this out and let us know any issues/feedback you have via G
 
 
 
-
-
 ## Usage
 
 ### Quick Start
@@ -47,19 +45,16 @@ Requirements:
 
 
 
-#### Installation of Helm Chart
-1. Choose which components you need by enabling/disabling them at `installer/values.yaml`.
+#### Installation of Helm
+<!-- 1. Choose which components you need by enabling/disabling them at `installer/values.yaml`. -->
 
 1. Run the following install command, where `spark-bundle` is the name you prefer:
 
     ```sh
-    helm install spark-bundle installer --namespace kapitanspark --create-namespace
+    helm install spark-bundle installer --namespace kapitanspark --create-namespace --atomic
     ```
-1. If any errors occur during the installation step, run the command below to uninstall it. The `--wait` flag will ensure all pods are removed.
-   ```sh
-   helm uninstall spark-bundle --namespace kapitanspark --wait
-   ```
-1. Run the command `kubectl get ingress --namespace kapitanspark` to get IP address of KUBERNETES_NODE_IP. For default password, please refer to component section in this document. After that you can access 
+
+2. Run the command `kubectl get ingress --namespace kapitanspark` to get IP address of KUBERNETES_NODE_IP. For default password, please refer to component section in this document. After that you can access 
     - Jupyter lab at http://KUBERNETES_NODE_IP/jupyterlab 
     - Spark History Server at http://KUBERNETES_NODE_IP/spark-history-server
     - Lighter UI http://KUBERNETES_NODE_IP/lighter 
@@ -133,13 +128,15 @@ You may customise your installation of the above components by editing the file 
 ##### Alternative Values File
 Alternatively, you can create a copy of the values file and run the following modified command
 ```bash
- helm install spark-bundle installer --values new_values.yaml --namespace kapitanspark --create-namespace
+
+ helm install spark-bundle installer --values new_values.yaml --namespace kapitanspark --create-namespace --atomic
  ```
 
-##### Using Kustomize :
+##### Configuration Using Kustomize :
 This approach prevents you from modifying the original source code and enables you to customize as per your needs.
 
-You may refer to this section [Advanced Installation](#advanced-installation)
+You may refer to this section [Using Kustomize](#using-kustomize-to-modify-configuration)
+
 </details>
 
 
@@ -153,21 +150,21 @@ You may create multiple instances of this Helm Chart by specifying a different H
 
 You may need to adjust the Spark Thrift Server Port Number if you are installing 2 instances on the same cluster.
 
-<details><summary><b>Show Sample Commands to Create Multiple Instances</b></summary>
+<details><summary>Show Sample Commands to Create Multiple Instances</summary>
 
 ```bash 
-helm install spark-production installer --namespace kapitanspark-prod --create-namespace
+helm install spark-production installer --namespace kapitanspark-prod --create-namespace --atomic
 ```
 
 ```bash 
-helm install spark-testing installer --namespace kapitanspark-test --create-namespace
+helm install spark-testing installer --namespace kapitanspark-test --create-namespace --atomic
 ```
 
 </details>
 
 
-
-<details><summary><b>Show Customised Install Instructions </b></summary>
+##### Using Kustomize to modify configuration 
+<details><summary>Show Customised Install Instructions </summary>
 
 Requirements:
 - Ingress (Nginx)
@@ -182,15 +179,10 @@ Requirements:
 4. Execute the install command stated below in the folder `kcustomize/example/prod/`, replacing `spark-bundle` with your preferred name. You can add `--dry-run=server` to test any error in helm files before installation:
     ```sh
     cd kcustomize/example/prod/
-    helm install spark-bundle ../../../installer --namespace kapitanspark  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace
+    helm install spark-bundle ../../../installer --namespace kapitanspark  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace --atomic
     ```
-5. If any errors occur during the installation step, run the command below to uninstall it. The `--wait` flag will ensure all pods are removed.
-   ```sh
-   helm uninstall spark-bundle --namespace kapitanspark --wait
-   ```
 
-6. After successful installation, you should be able to access the Jupyter Lab, Spark History Server and Lighter UI based on your configuration of the Ingress section in `values.yaml`.
-
+5. After successful installation, you should be able to access the Jupyter Lab, Spark History Server and Lighter UI based on your configuration of the Ingress section in `values.yaml`.
 
 </details>
 
