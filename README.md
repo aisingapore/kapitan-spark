@@ -53,7 +53,7 @@ Requirements:
 1. Run the following install command, where `spark-bundle` is the name you prefer:
 
     ```sh
-    helm install spark-bundle installer --namespace kapitanspark --create-namespace
+    helm install spark-bundle installer --namespace kapitanspark --create-namespace --atomic
     ```
 1. If any errors occur during the installation step, run the command below to uninstall it. The `--wait` flag will ensure all pods are removed.
    ```sh
@@ -133,7 +133,7 @@ You may customise your installation of the above components by editing the file 
 ##### Alternative Values File
 Alternatively, you can create a copy of the values file and run the following modified command
 ```bash
- helm install spark-bundle installer --values new_values.yaml --namespace kapitanspark --create-namespace
+ helm install spark-bundle installer --values new_values.yaml --namespace kapitanspark --create-namespace --atomic
  ```
 
 ##### Using Kustomize :
@@ -156,11 +156,11 @@ You may need to adjust the Spark Thrift Server Port Number if you are installing
 <details><summary><b>Show Sample Commands to Create Multiple Instances</b></summary>
 
 ```bash 
-helm install spark-production installer --namespace kapitanspark-prod --create-namespace
+helm install spark-production installer --namespace kapitanspark-prod --create-namespace --atomic
 ```
 
 ```bash 
-helm install spark-testing installer --namespace kapitanspark-test --create-namespace
+helm install spark-testing installer --namespace kapitanspark-test --create-namespace --atomic
 ```
 
 </details>
@@ -182,7 +182,7 @@ Requirements:
 4. Execute the install command stated below in the folder `kcustomize/example/prod/`, replacing `spark-bundle` with your preferred name. You can add `--dry-run=server` to test any error in helm files before installation:
     ```sh
     cd kcustomize/example/prod/
-    helm install spark-bundle ../../../installer --namespace kapitanspark  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace
+    helm install spark-bundle ../../../installer --namespace kapitanspark  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace --atomic
     ```
 5. If any errors occur during the installation step, run the command below to uninstall it. The `--wait` flag will ensure all pods are removed.
    ```sh
