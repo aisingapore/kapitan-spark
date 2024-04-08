@@ -47,7 +47,7 @@ Requirements:
 
 
 
-#### Installation of Helm Chart
+#### Installation of Helm
 <!-- 1. Choose which components you need by enabling/disabling them at `installer/values.yaml`. -->
 
 1. Run the following install command, where `spark-bundle` is the name you prefer:
