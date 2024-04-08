@@ -31,8 +31,6 @@ We invite you to try this out and let us know any issues/feedback you have via G
 
 
 
-
-
 ## Usage
 
 ### Quick Start
@@ -55,7 +53,8 @@ Requirements:
     ```sh
     helm install spark-bundle installer --namespace kapitanspark --create-namespace --atomic
     ```
-1. Run the command `kubectl get ingress --namespace kapitanspark` to get IP address of KUBERNETES_NODE_IP. For default password, please refer to component section in this document. After that you can access 
+
+2. Run the command `kubectl get ingress --namespace kapitanspark` to get IP address of KUBERNETES_NODE_IP. For default password, please refer to component section in this document. After that you can access 
     - Jupyter lab at http://KUBERNETES_NODE_IP/jupyterlab 
     - Spark History Server at http://KUBERNETES_NODE_IP/spark-history-server
     - Lighter UI http://KUBERNETES_NODE_IP/lighter 
@@ -129,6 +128,7 @@ You may customise your installation of the above components by editing the file 
 ##### Alternative Values File
 Alternatively, you can create a copy of the values file and run the following modified command
 ```bash
+
  helm install spark-bundle installer --values new_values.yaml --namespace kapitanspark --create-namespace --atomic
  ```
 
@@ -136,6 +136,7 @@ Alternatively, you can create a copy of the values file and run the following mo
 This approach prevents you from modifying the original source code and enables you to customize as per your needs.
 
 You may refer to this section [Using Kustomize](#using-kustomize-to-modify-configuration)
+
 </details>
 
 
@@ -182,7 +183,6 @@ Requirements:
     ```
 
 5. After successful installation, you should be able to access the Jupyter Lab, Spark History Server and Lighter UI based on your configuration of the Ingress section in `values.yaml`.
-
 
 </details>
 
