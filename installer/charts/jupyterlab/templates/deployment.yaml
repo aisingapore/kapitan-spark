@@ -31,8 +31,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 8888
-          command: [ "start-notebook.sh" ]
+            - containerPort: 8888         
+          command: ["bash", "start-notebook.sh"]   
           args:
             - "--NotebookApp.token="
             {{if not ( eq (index .Values.ingress.http.paths 0 "pathType") "Prefix")}}
@@ -40,24 +40,7 @@ spec:
             {{end}}
             - "--KernelSpecManager.ensure_native_kernel=False"
             - "--NotebookApp.notebook_dir=/home/jovyan/work"
-          lifecycle:
-            postStart:
-              exec:
-                command:
-                  - /bin/sh
-                  - -c
-                  - |
-                    conda install sparkmagic -y
-                    pip install -r /tmp/requirements.txt  --no-cache-dir
-                    jupyter nbextension enable --py --sys-prefix widgetsnbextension
-                    jupyter-kernelspec install --user $(pip show sparkmagic | grep Location | cut -d" " -f2)/sparkmagic/kernels/pysparkkernel
-                    jupyter serverextension enable --py sparkmagic
-                    jupyter kernelspec uninstall sparkkernel -y
-                    jupyter kernelspec uninstall sparkrkernel -y
-                    jupyter kernelspec uninstall python3 -y
-                    mkdir -p /home/jovyan/.sparkmagic/
-                    cp /tmp/sparkmagic.json /home/jovyan/.sparkmagic/config.json
-                    cp /tmp/quickstart.ipynb /home/jovyan/work/quickstart.ipynb
+  
           readinessProbe:
             initialDelaySeconds: 90
             tcpSocket:
@@ -73,9 +56,12 @@ spec:
             - name: secret
               mountPath: /home/jovyan/.jupyter/jupyter_notebook_config.py
               subPath: jupyter_notebook_config
-            - name: pip-file
+            - name: custom-file
               mountPath: /tmp/requirements.txt
               subPath: requirements.txt
+            - name: custom-file
+              mountPath: /usr/local/bin/start-notebook.sh
+              subPath: start-notebook.sh
             - name: persist-notebooks
               mountPath: /home/jovyan/work
 
@@ -88,9 +74,9 @@ spec:
         - name: secret
           secret:
             secretName: {{ include "jupyterlab.fullname" . }}-secret
-        - name: pip-file
+        - name: custom-file
           configMap:
-            name: {{ template "jupyterlab.fullname" . }}-pip-file
+            name: {{ template "jupyterlab.fullname" . }}-custom-file
         - name: persist-notebooks
           persistentVolumeClaim:
               claimName: {{ include "jupyterlab.fullname" . }}-persist-notebooks

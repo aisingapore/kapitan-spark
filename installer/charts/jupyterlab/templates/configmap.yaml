@@ -100,11 +100,13 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "jupyterlab.fullname" . }}-pip-file
+  name: {{ include "jupyterlab.fullname" . }}-custom-file
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "jupyterlab.labels" $ | trim | nindent 4 }}
 binaryData:
   requirements.txt:
     {{ .Files.Get "requirements.txt" | b64enc | nindent 4 }}
+  start-notebook.sh:
+    {{ .Files.Get "start-notebook.sh" | b64enc | nindent 4 }}
 
