@@ -90,7 +90,7 @@ python:
 
 # when using SparkFiles.getRootDirectory()
 local:
-  dir: /opt/spark/work-dir
+  dir: /tmp
 
 passwordPairs:
   # output of openssl passwd -quiet <password> ; password is 5Wmi95w4
