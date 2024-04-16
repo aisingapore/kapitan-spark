@@ -51,7 +51,7 @@ Requirements:
 1. Run the following install command, where `spark-bundle` is the name you prefer:
 
     ```sh
-    helm install spark-bundle installer --namespace kapitanspark --create-namespace --atomic
+    helm install spark-bundle installer --namespace kapitanspark --create-namespace --atomic --timeout=15m
     ```
 
 2. Run the command `kubectl get ingress --namespace kapitanspark` to get IP address of KUBERNETES_NODE_IP. For default password, please refer to component section in this document. After that you can access 
@@ -129,7 +129,7 @@ You may customise your installation of the above components by editing the file 
 Alternatively, you can create a copy of the values file and run the following modified command
 ```bash
 
- helm install spark-bundle installer --values new_values.yaml --namespace kapitanspark --create-namespace --atomic
+ helm install spark-bundle installer --values new_values.yaml --namespace kapitanspark --create-namespace --atomic --timeout=15m
  ```
 
 ##### Configuration Using Kustomize :
@@ -153,11 +153,11 @@ You may need to adjust the Spark Thrift Server Port Number if you are installing
 <details><summary>Show Sample Commands to Create Multiple Instances</summary>
 
 ```bash 
-helm install spark-production installer --namespace kapitanspark-prod --create-namespace --atomic
+helm install spark-production installer --namespace kapitanspark-prod --create-namespace --atomic --timeout=15m
 ```
 
 ```bash 
-helm install spark-testing installer --namespace kapitanspark-test --create-namespace --atomic
+helm install spark-testing installer --namespace kapitanspark-test --create-namespace --atomic --timeout=15m
 ```
 
 </details>
@@ -179,7 +179,7 @@ Requirements:
 4. Execute the install command stated below in the folder `kcustomize/example/prod/`, replacing `spark-bundle` with your preferred name. You can add `--dry-run=server` to test any error in helm files before installation:
     ```sh
     cd kcustomize/example/prod/
-    helm install spark-bundle ../../../installer --namespace kapitanspark  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace --atomic
+    helm install spark-bundle ../../../installer --namespace kapitanspark  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace --atomic --timeout=15m
     ```
 
 5. After successful installation, you should be able to access the Jupyter Lab, Spark History Server and Lighter UI based on your configuration of the Ingress section in `values.yaml`.
