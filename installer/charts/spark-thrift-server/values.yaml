@@ -10,7 +10,7 @@ fullnameOverride: ""
 
 service:
   # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
-  type: LoadBalancer
+  type: NodePort
   # optional no need value
   clusterIP:
   # Only need to fill up if service type is NodePort

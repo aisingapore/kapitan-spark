@@ -15,7 +15,7 @@ hive-metastore:
 
 spark-thrift-server:
     service:
-      type: LoadBalancer # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
+      type: NodePort # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer (Cloud only)
       clusterIP: # optional no need value
       nodePortSparkUIPort: 31001 # Only need to fill up if service type is NodePort
       nodePortSparkThriftServerPort: 31002 # Only need to fill up if service type is NodePort
@@ -86,7 +86,7 @@ lighter:
           eventLog:
               enabled: true
               usePVC: true # use Kubernetes Persistence volume, put false if using blob storage
-              dir: /opt/spark/event-logs
+              dir: /opt/spark/event-logs # if using s3a make sure the directory is manually created first!
     passwordPairs:
       dataOps: tuzr3bYvP1pq6 # output of openssl passwd -quiet <password> ; password is 5Wmi95w4
     lighter-postgresql:
@@ -134,12 +134,13 @@ jupyterlab:
     # from notebook.auth import passwd  
     # passwd("spark ecosystem")
     jupyterPassword: argon2:$argon2id$v=19$m=10240,t=10,p=8$rqX1GcIVDKwH73enY4FDXQ$WUxU8yQaMaIdp3CO14FGns74LzrxCGmqa3WwkZBe7jE   
+    lighterUsername: dataOps
     lighterPassword: 5Wmi95w4 # refer to lighter values.yaml on how to generate this password
 
 spark-history-server:
     eventLog:
         usePVC: true
-        dir: /opt/spark/event-logs  # need blob storage or network storage
+        dir: /opt/spark/event-logs  # need blob storage or network storage. if using s3a make sure the directory is manually created first!
     s3a:
       accessKey: empty
       secretKey: empty
