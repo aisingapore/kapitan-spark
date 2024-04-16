@@ -86,7 +86,7 @@ lighter:
           eventLog:
               enabled: true
               usePVC: true # use Kubernetes Persistence volume, put false if using blob storage
-              dir: /opt/spark/event-logs # if using s3a make sure the directory is manually created first using the same accessKey and secretKey !
+              dir: /opt/spark/event-logs # if using s3a make sure the directory is manually created first!
     passwordPairs:
       dataOps: tuzr3bYvP1pq6 # output of openssl passwd -quiet <password> ; password is 5Wmi95w4
     lighter-postgresql:
@@ -140,7 +140,7 @@ jupyterlab:
 spark-history-server:
     eventLog:
         usePVC: true
-        dir: /opt/spark/event-logs  # need blob storage or network storage. if using s3a make sure the directory is manually created first using the same accessKey and secretKey !
+        dir: /opt/spark/event-logs  # need blob storage or network storage. if using s3a make sure the directory is manually created first!
     s3a:
       accessKey: empty
       secretKey: empty
