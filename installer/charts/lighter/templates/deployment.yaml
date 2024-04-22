@@ -111,8 +111,8 @@ spec:
                                         {{- if .Values.image.pullSecrets }}
                                         "spark.kubernetes.container.image.pullSecrets": "{{ join "," (values (index .Values.image.pullSecrets 0)) }}",
                                         {{- end }}
-                                        "spark.driver.extraJavaOptions": "-Divy.cache.dir=/tmp -Divy.home=/tmp -XX:+UseG1GC",
-                                        "spark.executor.extraJavaOptions": "-Divy.cache.dir=/tmp -Divy.home=/tmp -XX:+UseG1GC",
+                                        "spark.driver.extraJavaOptions": "-Divy.cache.dir=/tmp -Divy.home=/tmp -XX:+UseG1GC -XX:+UseCompressedStrings",
+                                        "spark.executor.extraJavaOptions": "-Divy.cache.dir=/tmp -Divy.home=/tmp -XX:+UseG1GC -XX:+UseCompressedStrings -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps",
                                         "spark.serializer": "org.apache.spark.serializer.KryoSerializer",
                                         "spark.kubernetes.executor.podNamePrefix": "{{ include "lighter.fullname" . }}",
                                         "spark.jars.packages": "",
@@ -162,8 +162,8 @@ spec:
                                         {{- if .Values.image.pullSecrets }}
                                         "spark.kubernetes.container.image.pullSecrets": "{{ join "," (values (index .Values.image.pullSecrets 0)) }}",
                                         {{- end }}
-                                        "spark.driver.extraJavaOptions": "-Divy.cache.dir=/tmp -Divy.home=/tmp -XX:+UseG1GC",
-                                        "spark.executor.extraJavaOptions": "-Divy.cache.dir=/tmp -Divy.home=/tmp -XX:+UseG1GC",
+                                        "spark.driver.extraJavaOptions": "-Divy.cache.dir=/tmp -Divy.home=/tmp -XX:+UseG1GC -XX:+UseCompressedStrings",
+                                        "spark.executor.extraJavaOptions": "-Divy.cache.dir=/tmp -Divy.home=/tmp -XX:+UseG1GC -XX:+UseCompressedStrings -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps",
                                         "spark.serializer": "org.apache.spark.serializer.KryoSerializer",
                                         "spark.kubernetes.executor.podNamePrefix": "{{ include "lighter.fullname" . }}",
                                         "spark.jars.packages": "",
