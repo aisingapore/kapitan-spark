@@ -12,6 +12,10 @@ hive-metastore:
           username: hive
           password: E9mZ424xCUt3
           database: metastore
+    s3a:
+      accessKey: empty
+      secretKey: empty
+      endpoint: https://empty          
 
 spark-thrift-server:
     service:
@@ -134,9 +138,7 @@ jupyterlab:
     # from notebook.auth import passwd  
     # passwd("spark ecosystem")
     jupyterPassword: argon2:$argon2id$v=19$m=10240,t=10,p=8$rqX1GcIVDKwH73enY4FDXQ$WUxU8yQaMaIdp3CO14FGns74LzrxCGmqa3WwkZBe7jE   
-    lighterUsername: dataOps
-    lighterPassword: 5Wmi95w4 # refer to lighter values.yaml on how to generate this password
-
+  
 spark-history-server:
     eventLog:
         usePVC: true

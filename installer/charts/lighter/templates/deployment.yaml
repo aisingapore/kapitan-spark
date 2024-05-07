@@ -127,7 +127,7 @@ spec:
                                         "spark.dynamicAllocation.enabled": "true",
                                         "spark.dynamicAllocation.shuffleTracking.enabled": "true",
                                         "spark.dynamicAllocation.minExecutors": "1",
-                                        "spark.dynamicAllocation.maxExecutors": "5",
+                                        "spark.dynamicAllocation.maxExecutors": "60",
 
                                         "spark.hadoop.fs.AbstractFileSystem.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS",
                                         "spark.hadoop.fs.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem",
@@ -149,7 +149,13 @@ spec:
                                         "spark.eventLog.enabled": "{{ .Values.spark.history.eventLog.enabled }}",
                                         "spark.local.dir": "{{ .Values.local.dir }}"
 
-                                        
+                                        "spark.hadoop.fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem",
+                                        "spark.hadoop.fs.s3a.committer.magic.enabled": "true",
+                                        "spark.hadoop.mapreduce.outputcommitter.factory.scheme.s3a": "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory",
+                                        "spark.hadoop.fs.s3a.committer.name": "magic",
+                                        "spark.sql.sources.commitProtocolClass": "org.apache.spark.internal.io.cloud.PathOutputCommitProtocol",
+                                        "spark.sql.parquet.output.committer.class": "org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter"
+
 
                                     }'                    
                         -   name: LIGHTER_SESSION_DEFAULT_CONF
@@ -162,8 +168,8 @@ spec:
                                         {{- if .Values.image.pullSecrets }}
                                         "spark.kubernetes.container.image.pullSecrets": "{{ join "," (values (index .Values.image.pullSecrets 0)) }}",
                                         {{- end }}
-                                        "spark.driver.extraJavaOptions": "-Divy.cache.dir=/tmp -Divy.home=/tmp -XX:+UseG1GC -XX:+UseCompressedStrings",
-                                        "spark.executor.extraJavaOptions": "-Divy.cache.dir=/tmp -Divy.home=/tmp -XX:+UseG1GC -XX:+UseCompressedStrings -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps",
+                                        "spark.driver.extraJavaOptions": "-Divy.cache.dir=/tmp -Divy.home=/tmp -XX:+UseG1GC -XX:+UseCompressedStrings -XX:InitiatingHeapOccupancyPercent=35",
+                                        "spark.executor.extraJavaOptions": "-Divy.cache.dir=/tmp -Divy.home=/tmp -XX:+UseG1GC -XX:+UseCompressedStrings -XX:InitiatingHeapOccupancyPercent=35",
                                         "spark.serializer": "org.apache.spark.serializer.KryoSerializer",
                                         "spark.kubernetes.executor.podNamePrefix": "{{ include "lighter.fullname" . }}",
                                         "spark.jars.packages": "",
@@ -178,7 +184,7 @@ spec:
                                         "spark.dynamicAllocation.enabled": "true",
                                         "spark.dynamicAllocation.shuffleTracking.enabled": "true",
                                         "spark.dynamicAllocation.minExecutors": "1",
-                                        "spark.dynamicAllocation.maxExecutors": "5",
+                                        "spark.dynamicAllocation.maxExecutors": "60",
 
                                         "spark.hadoop.fs.AbstractFileSystem.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS",
                                         "spark.hadoop.fs.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem",
@@ -198,7 +204,14 @@ spec:
                                         {{ end }}
                                         "spark.eventLog.dir": "{{ .Values.spark.history.eventLog.dir }}",
                                         "spark.eventLog.enabled": "{{ .Values.spark.history.eventLog.enabled }}",
-                                        "spark.local.dir": "{{ .Values.local.dir }}"
+                                        "spark.local.dir": "{{ .Values.local.dir }}",
+
+                                        "spark.hadoop.fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem",
+                                        "spark.hadoop.fs.s3a.committer.magic.enabled": "true",
+                                        "spark.hadoop.mapreduce.outputcommitter.factory.scheme.s3a": "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory",
+                                        "spark.hadoop.fs.s3a.committer.name": "magic",
+                                        "spark.sql.sources.commitProtocolClass": "org.apache.spark.internal.io.cloud.PathOutputCommitProtocol",
+                                        "spark.sql.parquet.output.committer.class": "org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter"
 
                                         
 

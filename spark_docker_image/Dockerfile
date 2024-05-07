@@ -1,4 +1,4 @@
-FROM apache/spark:3.5.0
+FROM apache/spark:3.5.1
 
 
 USER root
@@ -18,6 +18,8 @@ ADD --chown=spark:spark https://repo1.maven.org/maven2/com/google/cloud/bigdatao
 
 COPY ./spark_docker_image/requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
+
+RUN apt-get install unzip htop
 
 USER spark
 WORKDIR /opt/spark/work-dir
