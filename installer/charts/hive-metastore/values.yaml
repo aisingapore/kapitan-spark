@@ -40,3 +40,8 @@ resources:
   requests:
     cpu: 1
     memory: 1Gi
+
+s3a:
+  accessKey: empty
+  secretKey: empty
+  endpoint: https://empty
