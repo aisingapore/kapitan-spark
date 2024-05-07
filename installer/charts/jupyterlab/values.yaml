@@ -29,7 +29,8 @@ service:
 ingress:
   enabled: true
   annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: 500M # allow upload to 500Mb per request
+    # allow upload to 500Mb per request
+    nginx.ingress.kubernetes.io/proxy-body-size: 500M
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
 
