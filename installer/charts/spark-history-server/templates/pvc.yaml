@@ -6,6 +6,8 @@ metadata:
   namespace: {{ .Release.Namespace }} 
   labels:
     {{- include "spark-history-server.labels" $ | trim | nindent 4 }}
+  annotations:
+    helm.sh/resource-policy: "keep"
 
 spec:
   accessModes:
