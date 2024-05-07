@@ -18,10 +18,10 @@ ADD --chown=spark:spark https://repo1.maven.org/maven2/com/google/cloud/bigdatao
 RUN apt update && apt upgrade -y && apt install -y software-properties-common unzip htop
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt update
-RUN apt install -y python3.12
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
+RUN apt install -y python3.11
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
 RUN update-alternatives --config python3
-RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.12 
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
 
 RUN apt-get clean
 RUN apt-get autoremove -y --purge
@@ -33,5 +33,5 @@ RUN chown -R spark:spark /home/spark
 
 USER spark
 WORKDIR /opt/spark/work-dir
-ENV PYSPARK_PYTHON=python3.12
+ENV PYSPARK_PYTHON=python3.11
 RUN pip install -r /tmp/requirements.txt --no-cache-dir && rm /tmp/requirements.txt
