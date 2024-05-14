@@ -8,3 +8,7 @@ jupyterlab-execute-time==3.1.2
 Pillow==10.2.0
 jupyterlab-git==0.50.0
 jupytext==1.16.1
+jedi-language-server==0.41.4
+jupyter-lsp==2.2.5
+jupyterlab-lsp==5.1.0
+jupyterlab-sql-editor==0.1.96
