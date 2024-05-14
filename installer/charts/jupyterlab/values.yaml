@@ -11,10 +11,6 @@ image:
   # pullSecrets:
   # - name: myRegistryKeySecretName
 
-nameOverride: ""
-fullnameOverride: ""
-
-
 service:
   # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
   type: ClusterIP

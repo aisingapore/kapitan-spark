@@ -147,14 +147,15 @@ spec:
                                         {{ end }}
                                         "spark.eventLog.dir": "{{ .Values.spark.history.eventLog.dir }}",
                                         "spark.eventLog.enabled": "{{ .Values.spark.history.eventLog.enabled }}",
-                                        "spark.local.dir": "{{ .Values.local.dir }}"
+                                        "spark.local.dir": "{{ .Values.local.dir }}",
 
                                         "spark.hadoop.fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem",
                                         "spark.hadoop.fs.s3a.committer.magic.enabled": "true",
                                         "spark.hadoop.mapreduce.outputcommitter.factory.scheme.s3a": "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory",
                                         "spark.hadoop.fs.s3a.committer.name": "magic",
                                         "spark.sql.sources.commitProtocolClass": "org.apache.spark.internal.io.cloud.PathOutputCommitProtocol",
-                                        "spark.sql.parquet.output.committer.class": "org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter"
+                                        "spark.sql.parquet.output.committer.class": "org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter",
+                                        "spark.hadoop.fs.s3a.bucket.all.committer.magic.enabled": "true"
 
 
                                     }'                    
@@ -211,7 +212,8 @@ spec:
                                         "spark.hadoop.mapreduce.outputcommitter.factory.scheme.s3a": "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory",
                                         "spark.hadoop.fs.s3a.committer.name": "magic",
                                         "spark.sql.sources.commitProtocolClass": "org.apache.spark.internal.io.cloud.PathOutputCommitProtocol",
-                                        "spark.sql.parquet.output.committer.class": "org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter"
+                                        "spark.sql.parquet.output.committer.class": "org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter",
+                                        "spark.hadoop.fs.s3a.bucket.all.committer.magic.enabled": "true"
 
                                         
 
