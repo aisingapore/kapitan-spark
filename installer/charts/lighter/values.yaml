@@ -6,11 +6,8 @@ image:
   # - name: myRegistryKeySecretName
   spark:
     repository: ghcr.io/aisingapore/kapitan-spark/spark
-    tag: 0.0.3-spark3.5.0
+    tag: 0.0.4-spark3.5.1
     pullPolicy: IfNotPresent
-
-nameOverride: ""
-fullnameOverride: ""
 
 resources:
   limits: {}

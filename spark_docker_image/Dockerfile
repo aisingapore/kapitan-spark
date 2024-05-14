@@ -14,6 +14,8 @@ ADD --chown=spark:spark https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-
 ADD --chown=spark:spark https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.490/aws-java-sdk-bundle-1.12.490.jar $SPARK_HOME/jars
 # Adding GCS Connector for Spark
 ADD --chown=spark:spark https://repo1.maven.org/maven2/com/google/cloud/bigdataoss/gcs-connector/hadoop3-2.2.15/gcs-connector-hadoop3-2.2.15-shaded.jar $SPARK_HOME/jars
+# S3 Committer for Spark 3.5.1
+ADD --chown=spark:spark https://repo1.maven.org/maven2/org/apache/spark/spark-hadoop-cloud_2.12/3.5.1/spark-hadoop-cloud_2.12-3.5.1.jar $SPARK_HOME/jars
 
 RUN apt update && apt upgrade -y && apt install -y software-properties-common unzip htop
 RUN add-apt-repository ppa:deadsnakes/ppa
