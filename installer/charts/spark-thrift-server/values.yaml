@@ -1,12 +1,9 @@
 image:
   repository: ghcr.io/aisingapore/kapitan-spark/spark
   pullPolicy: IfNotPresent
-  tag: 0.0.3-spark3.5.0
+  tag: 0.0.4-spark3.5.1
   # pullSecrets:
   # - name: myRegistryKeySecretName
-
-nameOverride: ""
-fullnameOverride: ""
 
 service:
   # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
