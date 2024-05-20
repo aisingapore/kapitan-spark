@@ -28,3 +28,9 @@ dependencies:
   repository: file://charts/spark-history-server
   version: 0.1.0
   condition: spark-history-server.enabled
+
+- name: spark-dashboard
+  repository: file://charts/spark-dashboard
+  version: 0.1.0
+  condition: spark-dashboard.enabled
+

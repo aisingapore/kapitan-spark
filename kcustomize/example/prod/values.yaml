@@ -107,6 +107,8 @@ lighter:
           repository: ghcr.io/aisingapore/kapitan-spark/spark 
           tag: 0.0.4-spark3.5.1
           pullPolicy: IfNotPresent
+    influx:
+      enabled: true
 
 jupyterlab:
     service:
@@ -175,3 +177,32 @@ spark-history-server:
         # - hosts:
         #    - spark-history-server.begonia.aisingapore.net
           #secretName: chart-example-tls
+
+spark-dashboard:
+  grafana:
+    enabled: true
+    ingress:
+      enabled: true
+      annotations:
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
+
+        # acme.cert-manager.io/http01-edit-in-place: "true"
+        # cert-manager.io/cluster-issuer: letsencrypt-prod
+        # cert-manager.io/issue-temporary-certificate: "true"
+        # kubernetes.io/ingress.class: nginx
+
+      # leave empty if do not have dns name
+      host:
+      tls: []
+        # - hosts:
+        #    - grafana.begonia.aisingapore.net
+        # secretName: chart-example-tls
+     
+    passwordPairs:
+      user: dashboard
+      password: 1K7rYwg655Zl
+  influxdb:
+      passwordPairs:
+          user: influx
+          password: QeS87mkUg5Uj

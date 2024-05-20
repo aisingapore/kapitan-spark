@@ -1,0 +1,31 @@
+{{- if .Values.grafana.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "spark-dashboard.fullname" . }}-grafana
+  namespace: {{ .Release.Namespace }} 
+  labels:
+    {{- include "spark-dashboard.labels" $ | trim | nindent 4 }}
+  {{- if .Values.grafana.service.annotations }}
+  annotations: 
+            {{- with .Values.grafana.service.annotations }}
+                {{- toYaml . | nindent 4 }}
+            {{- end }}
+  {{- end }}
+
+spec:
+  selector:
+    app: {{ include "spark-dashboard.fullname" . }}-grafana
+  type: {{ required "Service type is required" .Values.grafana.service.type }}
+  {{- if .Values.grafana.service.clusterIP }}
+  clusterIP: {{ .Values.grafana.service.clusterIP }}
+  {{- end}}
+  ports:
+  - name: grafana
+    protocol: TCP
+    port: 3000
+    targetPort: 3000
+    {{- if or (eq .Values.grafana.service.type "NodePort") (eq .Values.grafana.service.type "LoadBalancer") }}
+    nodePort: {{ required "Node Port number for Grafana is required" .Values.grafana.service.nodePortGrafanaPort }}
+    {{- end }}
+{{ end }}
