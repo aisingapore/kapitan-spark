@@ -38,11 +38,11 @@ spec:
           protocol: TCP
         livenessProbe:
           httpGet:
-            path: /healthz
+            path: healthz
             port: http
         readinessProbe:
           httpGet:
-            path: /healthz
+            path: healthz
             port: http
         resources:
             {{- toYaml .Values.grafana.resources | nindent 12 }}
