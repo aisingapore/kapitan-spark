@@ -2,6 +2,7 @@
 {{- $postgresql_username := index .Values "lighter-postgresql" "auth" "username" -}}
 {{- $postgresql_password := index .Values "lighter-postgresql" "auth" "password" -}}
 {{- $hiveMetastoreServiceName := "" }}
+{{- $influxServiceName := "" }}
 {{- $sparkHistoryServerPVCName := "" }}
 {{ if and .Values.global ( .Values.global.isTopLevel) }}
     {{ if .Values.spark.history.eventLog.usePVC}}
@@ -19,8 +20,24 @@
           {{ end }}
       {{ end }}
   {{ end }}
+  {{- $influxNamespace := index .Values "influx" "namespace" -}}
+  {{ range $index, $service := (lookup "v1" "Service" $influxNamespace "").items }}
+      {{ range $element := $service.spec.ports -}}
+          {{ range $key, $value := $element -}}
+              {{ if and (eq "port" $key) (eq 2003 $value) }}
+                  {{- $influxServiceName = $service.metadata.name }}
+                  {{ break }}
+              {{ end }}
+          {{ end }}
+      {{ end }}
+  {{ end }}
+  
   {{- if eq $hiveMetastoreServiceName "" }}
   {{- fail ( printf "Cannot find hive metastore service in namespace: %s, update variable hiveMetastore.namespace in values.yaml" $hiveMetastoreNamespace) }}
+  {{- end }}
+
+  {{- if eq $influxServiceName "" }}
+  {{- fail ( printf "Cannot find Influx service in namespace: %s, update variable influx.namespace in values.yaml" $influxServiceName) }}
   {{- end }}
 
   {{ if .Values.spark.history.eventLog.usePVC}}
@@ -71,7 +88,7 @@ spec:
                     imagePullPolicy: "{{.Values.image.pullPolicy}}"
                     name: lighter
                     securityContext:
-                        allowPrivilegeEscalation: false                    
+                        allowPrivilegeEscalation: false                   
                     readinessProbe:
                         httpGet:
                             path: /health/readiness
@@ -103,6 +120,11 @@ spec:
                             value: http://{{ include "lighter.fullname" . }}:8080
                         -   name: LIGHTER_BATCH_DEFAULT_CONF
                             value: '{
+                                        "spark.log.level": "error",
+                                        "spark.kubernetes.driver.runAsUser": "185",
+                                        "spark.kubernetes.executor.runAsUser": "185",
+                                        "spark.kubernetes.driver.fsGroup": "185",
+                                        "spark.kubernetes.executor.fsGroup": "185", 
                                         "spark.hadoop.hive.metastore.uris": "thrift://{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Name }}-hive-metastore{{ else }}{{ required "hive metastore installed full service name required" $hiveMetastoreServiceName }}{{ end }}.{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Namespace }}{{ else }}{{ required "hive metastore installed namespace required" .Values.hiveMetastore.namespace }}{{ end }}.svc.cluster.local:9083",
                                         "spark.sql.extensions": "io.delta.sql.DeltaSparkSessionExtension",
                                         "spark.sql.catalog.spark_catalog": "org.apache.spark.sql.delta.catalog.DeltaCatalog",
@@ -149,6 +171,18 @@ spec:
                                         "spark.eventLog.enabled": "{{ .Values.spark.history.eventLog.enabled }}",
                                         "spark.local.dir": "{{ .Values.local.dir }}",
 
+                                        {{ if .Values.influx.enabled }}
+                                        "spark.metrics.conf.*.sink.graphite.class":"org.apache.spark.metrics.sink.GraphiteSink",
+                                        "spark.metrics.conf.*.sink.graphite.host":"{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Name }}-spark-dashboard-influx{{ else }}{{ required "Influx installed full service name required" $influxServiceName }}{{ end }}.{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Namespace }}{{ else }}{{ required "influx installed namespace required" .Values.influx.namespace }}{{ end }}.svc.cluster.local",
+                                        "spark.metrics.conf.*.sink.graphite.port":"2003",
+                                        "spark.metrics.conf.*.sink.graphite.period":"10",
+                                        "spark.metrics.conf.*.sink.graphite.unit":"seconds",
+                                        "spark.metrics.conf.*.sink.graphite.prefix":"lighter",
+                                        "spark.metrics.conf.*.source.jvm.class":"org.apache.spark.metrics.source.JvmSource",
+                                        "spark.metrics.staticSources.enabled":"true",
+                                        "spark.metrics.appStatusSource.enabled":"true",
+                                        {{ end }}
+
                                         "spark.hadoop.fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem",
                                         "spark.hadoop.fs.s3a.committer.magic.enabled": "true",
                                         "spark.hadoop.mapreduce.outputcommitter.factory.scheme.s3a": "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory",
@@ -161,6 +195,11 @@ spec:
                                     }'                    
                         -   name: LIGHTER_SESSION_DEFAULT_CONF
                             value: '{   
+                                        "spark.log.level": "error",
+                                        "spark.kubernetes.driver.runAsUser": "185",
+                                        "spark.kubernetes.executor.runAsUser": "185",
+                                        "spark.kubernetes.driver.fsGroup": "185",
+                                        "spark.kubernetes.executor.fsGroup": "185", 
                                         "spark.hadoop.hive.metastore.uris": "thrift://{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Name }}-hive-metastore{{ else }}{{ required "hive metastore installed full service name required" $hiveMetastoreServiceName }}{{ end }}.{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Namespace }}{{ else }}{{ required "hive metastore installed namespace required" .Values.hiveMetastore.namespace }}{{ end }}.svc.cluster.local:9083",
                                         "spark.sql.extensions": "io.delta.sql.DeltaSparkSessionExtension",
                                         "spark.sql.catalog.spark_catalog": "org.apache.spark.sql.delta.catalog.DeltaCatalog",
@@ -207,6 +246,18 @@ spec:
                                         "spark.eventLog.enabled": "{{ .Values.spark.history.eventLog.enabled }}",
                                         "spark.local.dir": "{{ .Values.local.dir }}",
 
+                                        {{ if .Values.influx.enabled }}
+                                        "spark.metrics.conf.*.sink.graphite.class":"org.apache.spark.metrics.sink.GraphiteSink",
+                                        "spark.metrics.conf.*.sink.graphite.host":"{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Name }}-spark-dashboard-influx{{ else }}{{ required "Influx installed full service name required" $influxServiceName }}{{ end }}.{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Namespace }}{{ else }}{{ required "influx installed namespace required" .Values.influx.namespace }}{{ end }}.svc.cluster.local",
+                                        "spark.metrics.conf.*.sink.graphite.port":"2003",
+                                        "spark.metrics.conf.*.sink.graphite.period":"10",
+                                        "spark.metrics.conf.*.sink.graphite.unit":"seconds",
+                                        "spark.metrics.conf.*.sink.graphite.prefix":"lighter",
+                                        "spark.metrics.conf.*.source.jvm.class":"org.apache.spark.metrics.source.JvmSource",
+                                        "spark.metrics.staticSources.enabled":"true",
+                                        "spark.metrics.appStatusSource.enabled":"true",
+                                        {{ end }}
+
                                         "spark.hadoop.fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem",
                                         "spark.hadoop.fs.s3a.committer.magic.enabled": "true",
                                         "spark.hadoop.mapreduce.outputcommitter.factory.scheme.s3a": "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory",
@@ -214,9 +265,6 @@ spec:
                                         "spark.sql.sources.commitProtocolClass": "org.apache.spark.internal.io.cloud.PathOutputCommitProtocol",
                                         "spark.sql.parquet.output.committer.class": "org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter",
                                         "spark.hadoop.fs.s3a.bucket.all.committer.magic.enabled": "true"
-
-                                        
-
                                     }'
                         - name: LIGHTER_SESSION_TIMEOUT_INTERVAL
                           value: "90m" 
@@ -224,16 +272,5 @@ spec:
                           value: "{{ .Values.spark.history.url }}"
                         - name: LIGHTER_KUBERNETES_SERVICE_ACCOUNT
                           value: "{{ include "lighter.fullname" . }}-sa"
-                    {{ if .Values.spark.history.eventLog.usePVC }}
-                    volumeMounts:
-                    - mountPath: "{{ .Values.spark.history.eventLog.dir }}"
-                      name: event-logs
-                    {{ end }}    
-                        
+           
             serviceAccountName: "{{ include "lighter.fullname" . }}-sa"
-            {{ if .Values.spark.history.eventLog.usePVC }}
-            volumes:
-            - name: event-logs
-              persistentVolumeClaim:
-                    claimName: {{ $sparkHistoryServerPVCName }}
-            {{ end }}

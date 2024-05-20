@@ -1,0 +1,32 @@
+{{- if and .Values.influxdb.ingress.enabled (.Values.influxdb.ingress.http) -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: {{ include "spark-dashboard.fullname" . }}
+    namespace: {{ .Release.Namespace }} 
+    {{- if .Values.influxdb.ingress.annotations }}
+    annotations: 
+            {{- tpl (toYaml .Values.influxdb.ingress.annotations) . | nindent 8 }}
+    {{- end }}
+spec:
+    rules:
+    - http: 
+        {{- tpl (toYaml .Values.influxdb.ingress.http) . | nindent 8 }}
+      {{- if .Values.influxdb.ingress.host }}
+      host: {{ .Values.influxdb.ingress.host }}
+      {{- end }}
+    {{- if .Values.influxdb.ingress.tls }}
+    tls:
+        {{- range .Values.influxdb.ingress.tls }}
+        - hosts:
+            {{- range .hosts }}
+            - {{ . | quote }}
+            {{- end }}
+        {{- if .secretName  }}
+        secretName: {{ .secretName }}
+        {{- end }}
+
+        {{- end }}
+    {{- end }}
+
+{{- end -}}
