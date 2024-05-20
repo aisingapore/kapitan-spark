@@ -6,7 +6,7 @@ image:
   # - name: myRegistryKeySecretName
   spark:
     repository: ghcr.io/aisingapore/kapitan-spark/spark
-    tag: 0.0.4-spark3.5.1
+    tag: 0.0.5-spark3.5.1
     pullPolicy: IfNotPresent
 
 resources:
@@ -53,7 +53,7 @@ ingress:
           port:
             number: 8080
       path: /lighter
-      pathType: ImplementationSpecific
+      pathType: Prefix
   tls: []
     # - hosts:
     #    - spark-thrift-server.begonia.aisingapore.net
@@ -96,4 +96,7 @@ passwordPairs:
 # Only need to fill in if install on isolated namespace
 hiveMetastore:
   # only need this value if install spark thrift server subchart standalone
+  namespace: helmall
+influx:
+  enabled: true
   namespace: helmall

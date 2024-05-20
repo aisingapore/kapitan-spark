@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "spark-dashboard.fullname" . }}-influx
+  namespace: {{ .Release.Namespace }} 
+  labels:
+    {{- include "spark-dashboard.labels" $ | trim | nindent 4 }}
+  {{- if .Values.influxdb.service.annotations }}
+  annotations: 
+            {{- with .Values.influxdb.service.annotations }}
+                {{- toYaml . | nindent 4 }}
+            {{- end }}
+  {{- end }}
+
+spec:
+  selector:
+    app: {{ include "spark-dashboard.fullname" . }}-influx
+  type: {{ required "Service type is required" .Values.influxdb.service.type }}
+  {{- if .Values.influxdb.service.clusterIP }}
+  clusterIP: {{ .Values.influxdb.service.clusterIP }}
+  {{- end}}
+  ports:
+  - protocol: TCP
+    name: influx
+    port: 8086
+    targetPort: 8086
+    {{- if or (eq .Values.influxdb.service.type "NodePort") (eq .Values.influxdb.service.type "LoadBalancer") }}
+    nodePort: {{ required "Node Port number for InfluxDB is required" .Values.influxdb.service.nodePortInfluxDBPort }}
+    {{- end }}
+
+  - protocol: TCP
+    name: graphite
+    port: 2003
+    targetPort: 2003 

@@ -32,11 +32,8 @@ spec:
           - name: SPARK_NO_DAEMONIZE
             value: "false"
           - name: SPARK_HISTORY_OPTS
-            value: "{{if not ( eq (index .Values.ingress.http.paths 0 "pathType") "Prefix")}}-Dspark.ui.proxyBase=/spark-history-server {{end}}-Dspark.history.fs.logDirectory={{ .Values.eventLog.dir | default "/tmp" }} -Dspark.hadoop.fs.s3a.endpoint={{ .Values.s3a.endpoint }} -Dspark.hadoop.fs.s3a.path.style.access=true -Dspark.hadoop.fs.s3a.access.key={{ .Values.s3a.accessKey }} -Dspark.hadoop.fs.s3a.secret.key={{ .Values.s3a.secretKey }}"
+            value: "{{if not ( eq (index .Values.ingress.http.paths 0 "path") "/")}}-Dspark.ui.proxyBase=/spark-history-server {{end}}-Dspark.history.fs.logDirectory={{ .Values.eventLog.dir | default "/tmp" }} -Dspark.hadoop.fs.s3a.endpoint={{ .Values.s3a.endpoint }} -Dspark.hadoop.fs.s3a.path.style.access=true -Dspark.hadoop.fs.s3a.access.key={{ .Values.s3a.accessKey }} -Dspark.hadoop.fs.s3a.secret.key={{ .Values.s3a.secretKey }}"
               
-
-
-
           ports:
             - name: http
               containerPort: 18080
@@ -62,4 +59,3 @@ spec:
         persistentVolumeClaim:
             claimName: {{ include "spark-history-server.fullname" . }}-event-logs
       {{ end }}
-

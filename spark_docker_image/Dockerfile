@@ -17,6 +17,11 @@ ADD --chown=spark:spark https://repo1.maven.org/maven2/com/google/cloud/bigdatao
 # S3 Committer for Spark 3.5.1
 ADD --chown=spark:spark https://repo1.maven.org/maven2/org/apache/spark/spark-hadoop-cloud_2.12/3.5.1/spark-hadoop-cloud_2.12-3.5.1.jar $SPARK_HOME/jars
 
+# spark dashboard
+ADD --chown=spark:spark https://repo1.maven.org/maven2/ch/cern/sparkmeasure/spark-plugins_2.12/0.3/spark-plugins_2.12-0.3.jar $SPARK_HOME/jars
+ADD --chown=spark:spark https://repo1.maven.org/maven2/ch/cern/sparkmeasure/spark-measure_2.12/0.24/spark-measure_2.12-0.24.jar $SPARK_HOME/jars
+
+
 RUN apt update && apt upgrade -y && apt install -y software-properties-common unzip htop
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt update

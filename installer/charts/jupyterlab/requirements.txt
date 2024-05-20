@@ -12,3 +12,4 @@ jedi-language-server==0.41.4
 jupyter-lsp==2.2.5
 jupyterlab-lsp==5.1.0
 jupyterlab-sql-editor==0.1.96
+bokeh==3.4.1

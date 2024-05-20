@@ -17,3 +17,6 @@ jupyterlab:
 
 spark-history-server:
   enabled: true
+
+spark-dashboard:
+  enabled: true
