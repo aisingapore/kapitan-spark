@@ -3,7 +3,7 @@ grafana:
   image:
     repository: grafana/grafana
     pullPolicy: IfNotPresent
-    tag: "10.4.2" 
+    tag: "10.4.2"
 
   service:
     # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
@@ -59,7 +59,6 @@ grafana:
     user: dashboard
     password: 1K7rYwg655Zl
 
-   
 influxdb:
   image:
     repository: influxdb
@@ -75,7 +74,7 @@ influxdb:
     # optional no need value
     clusterIP:
     # Only need to fill up if service type is NodePort
-    nodePortGrafanaPort : 36001
+    nodePortGrafanaPort: 36001
 
     annotations: {}
       # networking.gke.io/load-balancer-type: "Internal"
@@ -121,5 +120,3 @@ influxdb:
   passwordPairs:
     user: influx
     password: QeS87mkUg5Uj
-
-
