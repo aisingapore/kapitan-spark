@@ -35,7 +35,7 @@ spec:
           command: ["bash", "start-notebook.sh"]   
           args:
             - "--NotebookApp.token="
-            {{if not ( eq (index .Values.ingress.http.paths 0 "pathType") "Prefix")}}
+            {{if not ( eq (index .Values.ingress.http.paths 0 "path") "/")}}
             - "--NotebookApp.base_url=jupyterlab"
             {{end}}
             - "--KernelSpecManager.ensure_native_kernel=False"

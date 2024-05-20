@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "spark-dashboard.fullname" . }}-influx
+  namespace: {{ .Release.Namespace }} 
+  labels:
+    {{- include "spark-dashboard.labels" $ | trim | nindent 4 }}
+    app: {{ include "spark-dashboard.fullname" . }}-influx
+    
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "spark-dashboard.fullname" . }}-influx
+  template:
+    metadata:
+      labels:
+        app: {{ include "spark-dashboard.fullname" . }}-influx
+    spec:
+      containers:
+      - name: influx
+        image: "{{ .Values.influxdb.image.repository }}:{{ .Values.influxdb.image.tag }}"
+        imagePullPolicy: {{.Values.influxdb.image.pullPolicy}}
+        securityContext:
+          allowPrivilegeEscalation: false  
+        ports:
+        - containerPort: 2003
+        - name: http
+          containerPort: 8086
+          protocol: TCP
+        # livenessProbe:
+        #   httpGet:
+        #     path: /
+        #     port: http
+        # readinessProbe:
+        #   httpGet:
+        #     path: /
+        #     port: http
+        livenessProbe:
+          exec:
+            command:
+            - 'sh'
+            - '-c'
+            - 'ps aux | grep influx'
+          periodSeconds: 60
+        readinessProbe:
+          exec:
+            command:
+            - 'sh'
+            - '-c'
+            - 'ps aux | grep influx'
+          periodSeconds: 60
+        resources:
+            {{- toYaml .Values.influxdb.resources | nindent 12 }}
+        volumeMounts:
+        - name: influx-data
+          mountPath: /var/lib/influxdb
+        - name: graphite-config
+          mountPath: /etc/influxdb/influxdb.conf
+          subPath: influx-graphite-config 
+        env:
+        - name: INFLUXDB_REPORTING_DISABLED
+          value: {{ .Values.influxdb.disableReporting | quote}}
+        - name: INFLUXDB_DB
+          value: {{ .Values.influxdb.dbName | quote }}
+        - name: INFLUXDB_HTTP_AUTH_ENABLED
+          value: "true"
+        - name: INFLUXDB_READ_USER
+          value: readonly
+        - name: INFLUXDB_ADMIN_USER
+          value: "admin"
+        - name: INFLUXDB_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "spark-dashboard.fullname" . }}-influx-auth
+              key: password  
+        - name: INFLUXDB_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "spark-dashboard.fullname" . }}-influx-auth
+              key: user  
+        - name: INFLUXDB_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "spark-dashboard.fullname" . }}-influx-auth
+              key: password              
+        
+      volumes:
+        - name: graphite-config
+          configMap:
+            name: {{ include "spark-dashboard.fullname" . }}-config 
+        - name: influx-data
+          persistentVolumeClaim:
+            claimName: {{ include "spark-dashboard.fullname" . }}-influx

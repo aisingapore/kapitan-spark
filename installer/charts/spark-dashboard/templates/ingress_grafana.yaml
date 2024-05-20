@@ -1,0 +1,32 @@
+{{- if and .Values.grafana.enabled ( and .Values.grafana.ingress.enabled (.Values.grafana.ingress.http)) -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: {{ include "lighter.fullname" . }}
+    namespace: {{ .Release.Namespace }} 
+    {{- if .Values.grafana.ingress.annotations }}
+    annotations: 
+            {{- tpl (toYaml .Values.grafana.ingress.annotations) . | nindent 8 }}
+    {{- end }}
+spec:
+    rules:
+    - http: 
+        {{- tpl (toYaml .Values.grafana.ingress.http) . | nindent 8 }}
+      {{- if .Values.grafana.ingress.host }}
+      host: {{ .Values.grafana.ingress.host }}
+      {{- end }}
+    {{- if .Values.grafana.ingress.tls }}
+    tls:
+        {{- range .Values.grafana.ingress.tls }}
+        - hosts:
+            {{- range .hosts }}
+            - {{ . | quote }}
+            {{- end }}
+        {{- if .secretName  }}
+        secretName: {{ .secretName }}
+        {{- end }}
+
+        {{- end }}
+    {{- end }}
+
+{{- end -}}

@@ -45,7 +45,7 @@ ingress:
           port:
             number: 8888
       path: /jupyterlab
-      pathType: ImplementationSpecific
+      pathType: Prefix
   tls: []
     # - hosts:
     #    - spark-thrift-server.begonia.aisingapore.net

@@ -63,7 +63,7 @@ ingress:
             number: 18080
       path: /spark-history-server(/|$)(.*)
 
-      pathType: ImplementationSpecific
+      pathType: Prefix
 
   tls: []
     # - hosts:

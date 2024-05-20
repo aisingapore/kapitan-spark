@@ -16,8 +16,7 @@ payload = {
   "driverMemory": "1G",
   "conf": {
     "spark.kubernetes.container.image": 'ghcr.io/aisingapore/kapitan-spark/spark:0.0.4-spark3.5.1',
-    "spark.kubernetes.container.image.pullPolicy": 'Always',
-    "spark.kubernetes.file.upload.path": 'local:///temp'
+    "spark.kubernetes.container.image.pullPolicy": 'Always'
   }
 }
 

@@ -14,11 +14,13 @@ The below components enable the following features:
 
 
 Components:
-- Hive Metastore
-- Spark Thrift Server
-- Spark History Server
-- Lighter Server
-- Jupyter Lab with SparkMagic Kernel
+- [Hive Metastore](https://github.com/apache/hadoop)
+- [Spark Thrift Server](https://github.com/apache/spark)
+- [Spark History Server](https://github.com/apache/spark)
+- [Lighter Server](https://github.com/exacaster/lighter)
+- [Jupyter Lab](https://github.com/jupyterlab/jupyterlab)
+- [SparkMagic Kernel](https://github.com/jupyter-incubator/sparkmagic)
+- [Spark Dashboard](https://github.com/cerndb/spark-dashboard)
 
 
 
@@ -58,6 +60,7 @@ Requirements:
     - Jupyter lab at http://KUBERNETES_NODE_IP/jupyterlab 
     - Spark History Server at http://KUBERNETES_NODE_IP/spark-history-server
     - Lighter UI http://KUBERNETES_NODE_IP/lighter 
+    - Spark Dashboard http://KUBERNETES_NODE_IP/grafana
 
 <!-- </details> -->
 
@@ -97,13 +100,15 @@ Requirements:
     - You may rebuild the image using the Dockerfile `spark_docker_image/Dockerfile` 
     - After rebuilding, modify the following keys in `values.yaml`: `image.spark.repository`, `image.spark.tag` in `values.yaml`.
     - If Spark History Server uses Persistent Volumes to save event logs instead of Blob storage S3a, ensure to install it with `spark-history-server` component on the same Kubernetes namespace.
-    - Dependencies: `hive-metastore` and `spark-history-server` components. The latter can be turned off in `values.yaml`.
+    - Dependencies: `hive-metastore`, `spark-dashboard` and `spark-history-server` components. The latter can be turned off in `values.yaml`.
     - Default user: `dataOps` password: `5Wmi95w4`
 
 - Spark History Server
     - By default, Persistent Volumes is used to read event logs, you may modify this by updating the `dir` key in [`spark-history-server/values.yaml`](installer/charts/spark-history-server/values.yaml) and in the `lighter` component, update key `spark.history.eventLog.dir` in [`lighter/values.yaml`](installer/charts/lighter/values.yaml)
     - If using Persistence volume instead of Blob storage S3a, ensure it is installed on the same namespace as other components.
     - Default user: `dataOps` password: `5Wmi95w4`
+- Spark Dashboard
+    - Default user: `grafana` password: `1K7rYwg655Zl`
 </details>
 
 
@@ -182,7 +187,7 @@ Requirements:
     helm install spark-bundle ../../../installer --namespace kapitanspark  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace --atomic --timeout=15m
     ```
 
-5. After successful installation, you should be able to access the Jupyter Lab, Spark History Server and Lighter UI based on your configuration of the Ingress section in `values.yaml`.
+5. After successful installation, you should be able to access the Jupyter Lab, Spark History Server, Lighter UI and Dashboard based on your configuration of the Ingress section in `values.yaml`.
 
 </details>
 

@@ -1,0 +1,62 @@
+{{- if .Values.grafana.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "spark-dashboard.fullname" . }}-datasource
+  namespace: {{ .Release.Namespace }}
+  labels:
+      {{- include "spark-dashboard.labels" $ | trim | nindent 4 }}
+data:
+  influx-datasource-config: |
+    apiVersion: 1
+    
+    datasources:
+    - name: influx-sparkmeasure
+      type: influxdb
+      access: proxy
+      orgId: 1
+      url: http://{{ include "spark-dashboard.fullname" . }}-influx:8086
+      secureJsonData:
+        password: {{ .Values.influxdb.passwordPairs.password}}
+      user: {{ .Values.influxdb.passwordPairs.user}}
+      database:
+        sparkmeasure
+      basicAuth:
+      basicAuthUser:
+      basicAuthPassword:
+      withCredentials:
+      isDefault:
+      version: 1
+      editable: false
+    - name: influx-graphite
+      type: influxdb
+      access: proxy
+      orgId: 1
+      url: http://{{ include "spark-dashboard.fullname" . }}-influx:8086
+      secureJsonData:
+        password: {{ .Values.influxdb.passwordPairs.password}}
+      user: {{ .Values.influxdb.passwordPairs.user}}
+      database:
+        graphite
+      basicAuth:
+      basicAuthUser:
+      basicAuthPassword:
+      withCredentials:
+      isDefault:
+      version: 1
+      editable: false
+  spark-dashboard-config: |
+    apiVersion: 1
+    
+    providers:
+    - name: spark-dashboard
+      orgId: 1
+      folder: ''
+      folderUid: ''
+      type: file
+      disableDeletion: false
+      editable: true
+      updateIntervalSeconds: 10
+      options:
+        path: /var/lib/grafana/dashboards
+{{ end }}

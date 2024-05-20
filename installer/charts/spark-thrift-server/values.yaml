@@ -7,7 +7,7 @@ image:
 
 service:
   # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
-  type: NodePort
+  type: ClusterIP
   # optional no need value
   clusterIP:
   # Only need to fill up if service type is NodePort
@@ -40,7 +40,7 @@ ingress:
           port:
             number: 4040
       path: /spark-thrift-server
-      pathType: ImplementationSpecific
+      pathType: Prefix
 
   tls: []
     # - hosts:
