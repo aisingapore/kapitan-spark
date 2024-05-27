@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: {{ include "lighter.fullname" . }}-pod-template
+    namespace: {{ .Release.Namespace }}
+    labels:
+        {{- include "lighter.labels" $ | trim | nindent 4 }}
+data:
+  driver_pod_template.yaml: |
+    apiVersion: v1
+    kind: Pod
+    spec:
+        tolerations:
+            - key: dedicated
+              operator: Equal
+              value: spark-driver
+              effect: NoSchedule
+        containers:
+            - securityContext:
+                allowPrivilegeEscalation: false 
+                fsGroup: 185
+                runAsGroup: 185
+                runAsNonRoot: true
+                runAsUser: 185
+                fsGroupChangePolicy: OnRootMismatch
+
+
+  executor_pod_template.yaml: |
+    apiVersion: v1
+    kind: Pod
+    spec:
+        tolerations:
+            - key: dedicated
+              operator: Equal
+              value: spark
+              effect: NoSchedule 
+        containers:
+            - securityContext:
+                allowPrivilegeEscalation: false 
+                fsGroup: 185
+                runAsGroup: 185
+                runAsNonRoot: true
+                runAsUser: 185
+                fsGroupChangePolicy: OnRootMismatch

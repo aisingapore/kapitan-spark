@@ -121,10 +121,6 @@ spec:
                         -   name: LIGHTER_BATCH_DEFAULT_CONF
                             value: '{
                                         "spark.log.level": "error",
-                                        "spark.kubernetes.driver.runAsUser": "185",
-                                        "spark.kubernetes.executor.runAsUser": "185",
-                                        "spark.kubernetes.driver.fsGroup": "185",
-                                        "spark.kubernetes.executor.fsGroup": "185", 
                                         "spark.hadoop.hive.metastore.uris": "thrift://{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Name }}-hive-metastore{{ else }}{{ required "hive metastore installed full service name required" $hiveMetastoreServiceName }}{{ end }}.{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Namespace }}{{ else }}{{ required "hive metastore installed namespace required" .Values.hiveMetastore.namespace }}{{ end }}.svc.cluster.local:9083",
                                         "spark.sql.extensions": "io.delta.sql.DeltaSparkSessionExtension",
                                         "spark.sql.catalog.spark_catalog": "org.apache.spark.sql.delta.catalog.DeltaCatalog",
@@ -196,10 +192,6 @@ spec:
                         -   name: LIGHTER_SESSION_DEFAULT_CONF
                             value: '{   
                                         "spark.log.level": "error",
-                                        "spark.kubernetes.driver.runAsUser": "185",
-                                        "spark.kubernetes.executor.runAsUser": "185",
-                                        "spark.kubernetes.driver.fsGroup": "185",
-                                        "spark.kubernetes.executor.fsGroup": "185", 
                                         "spark.hadoop.hive.metastore.uris": "thrift://{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Name }}-hive-metastore{{ else }}{{ required "hive metastore installed full service name required" $hiveMetastoreServiceName }}{{ end }}.{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Namespace }}{{ else }}{{ required "hive metastore installed namespace required" .Values.hiveMetastore.namespace }}{{ end }}.svc.cluster.local:9083",
                                         "spark.sql.extensions": "io.delta.sql.DeltaSparkSessionExtension",
                                         "spark.sql.catalog.spark_catalog": "org.apache.spark.sql.delta.catalog.DeltaCatalog",
@@ -272,5 +264,12 @@ spec:
                           value: "{{ .Values.spark.history.url }}"
                         - name: LIGHTER_KUBERNETES_SERVICE_ACCOUNT
                           value: "{{ include "lighter.fullname" . }}-sa"
+                    volumeMounts:
+                        - name: pod-template
+                          mountPath: /home/app/k8s/
            
             serviceAccountName: "{{ include "lighter.fullname" . }}-sa"
+            volumes:
+                - name: pod-template
+                  configMap:
+                    name: {{ include "lighter.fullname" . }}-pod-template
