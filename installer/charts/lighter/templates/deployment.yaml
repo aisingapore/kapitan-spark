@@ -157,6 +157,11 @@ spec:
                                         "spark.kubernetes.driverEnv.PYTHONPATH": "{{ .Values.python.user.base }}",
                                         "spark.executorEnv.PYTHONPATH": "{{ .Values.python.user.base }}",
                                         
+                                        "spark.kubernetes.driver.volumes.persistentVolumeClaim.{{ include "lighter.fullname" . }}-storage.options.claimName": "{{ include "lighter.fullname" . }}-storage",
+                                        "spark.kubernetes.driver.volumes.persistentVolumeClaim.{{ include "lighter.fullname" . }}-storage.mount.path": "/opt/spark/work-dir/",
+                                        "spark.kubernetes.executor.volumes.persistentVolumeClaim.{{ include "lighter.fullname" . }}-storage.options.claimName": "{{ include "lighter.fullname" . }}-storage",
+                                        "spark.kubernetes.executor.volumes.persistentVolumeClaim.{{ include "lighter.fullname" . }}-storage.mount.path": "/opt/spark/work-dir/",
+
                                         {{ if .Values.spark.history.eventLog.usePVC }}
                                         "spark.kubernetes.driver.volumes.persistentVolumeClaim.{{ $sparkHistoryServerPVCName }}.options.claimName": "{{ $sparkHistoryServerPVCName }}",
                                         "spark.kubernetes.driver.volumes.persistentVolumeClaim.{{ $sparkHistoryServerPVCName }}.mount.path": "{{ .Values.spark.history.eventLog.dir }}",
@@ -228,6 +233,12 @@ spec:
                                         "spark.kubernetes.driverEnv.PYTHONPATH": "{{ .Values.python.user.base }}",
                                         "spark.executorEnv.PYTHONPATH": "{{ .Values.python.user.base }}",
                                         
+                                        "spark.kubernetes.driver.volumes.persistentVolumeClaim.{{ include "lighter.fullname" . }}-storage.options.claimName": "{{ include "lighter.fullname" . }}-storage",
+                                        "spark.kubernetes.driver.volumes.persistentVolumeClaim.{{ include "lighter.fullname" . }}-storage.mount.path": "/opt/spark/work-dir/",
+                                        "spark.kubernetes.executor.volumes.persistentVolumeClaim.{{ include "lighter.fullname" . }}-storage.options.claimName": "{{ include "lighter.fullname" . }}-storage",
+                                        "spark.kubernetes.executor.volumes.persistentVolumeClaim.{{ include "lighter.fullname" . }}-storage.mount.path": "/opt/spark/work-dir/",
+
+
                                         {{ if .Values.spark.history.eventLog.usePVC }}
                                         "spark.kubernetes.driver.volumes.persistentVolumeClaim.{{ $sparkHistoryServerPVCName }}.options.claimName": "{{ $sparkHistoryServerPVCName }}",
                                         "spark.kubernetes.driver.volumes.persistentVolumeClaim.{{ $sparkHistoryServerPVCName }}.mount.path": "{{ .Values.spark.history.eventLog.dir }}",
