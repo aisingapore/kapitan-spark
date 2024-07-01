@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "lighter.fullname" . }}-storage
+  namespace: {{ .Release.Namespace }} 
+  labels:
+    {{- include "lighter.labels" $ | trim | nindent 4 }}
+  annotations:
+    helm.sh/resource-policy: "keep"
+
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: "50Gi"
