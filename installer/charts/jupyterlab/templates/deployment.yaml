@@ -54,6 +54,9 @@ spec:
               mountPath: /tmp/quickstart.ipynb
               subPath: quickstart
             - name: secret
+              mountPath: /tmp/tpcds.ipynb
+              subPath: tpcds
+            - name: secret
               mountPath: /home/jovyan/.jupyter/jupyter_notebook_config.py
               subPath: jupyter_notebook_config
             - name: custom-file
