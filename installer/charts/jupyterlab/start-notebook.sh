@@ -12,6 +12,6 @@ jupyter kernelspec uninstall sparkrkernel -y
 jupyter kernelspec uninstall python3 -y
 mkdir -p /home/jovyan/.sparkmagic/
 cp /tmp/sparkmagic.json /home/jovyan/.sparkmagic/config.json
-cp /tmp/quickstart.ipynb /home/jovyan/work/quickstart.ipynb
+cp /tmp/*.ipynb /home/jovyan/work/
 
 exec /usr/local/bin/start-notebook.py "$@"
