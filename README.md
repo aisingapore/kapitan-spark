@@ -77,7 +77,7 @@ Requirements:
 | ----------- | -----------  |----------- |
 | CPU         | 8 Cores      |            |
 | Memory      | 12 GB        |            |
-| Disk        | 40 GB        | Adjust this based on the size of your Spark docker images |
+| Disk        | 80 GB        | Adjust this based on the size of your Spark docker images |
 
 
 ### Component Details and Defaults
