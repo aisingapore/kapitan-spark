@@ -28,27 +28,15 @@ spec:
         - name: http
           containerPort: 8086
           protocol: TCP
-        # livenessProbe:
-        #   httpGet:
-        #     path: /
-        #     port: http
-        # readinessProbe:
-        #   httpGet:
-        #     path: /
-        #     port: http
         livenessProbe:
-          exec:
-            command:
-            - 'sh'
-            - '-c'
-            - 'ps aux | grep influx'
+          httpGet:
+            path: health
+            port: http
           periodSeconds: 60
         readinessProbe:
-          exec:
-            command:
-            - 'sh'
-            - '-c'
-            - 'ps aux | grep influx'
+          httpGet:
+            path: health
+            port: http
           periodSeconds: 60
         resources:
             {{- toYaml .Values.influxdb.resources | nindent 12 }}

@@ -63,7 +63,7 @@ influxdb:
   image:
     repository: influxdb
     pullPolicy: IfNotPresent
-    tag: "1.8.10-alpine"
+    tag: "1.8.10"
 
   disableReporting: "true"
   dbName: "graphite"
