@@ -108,7 +108,7 @@ Requirements:
     - If using Persistence volume instead of Blob storage S3a, ensure it is installed on the same namespace as other components.
     - Default user: `dataOps` password: `5Wmi95w4`
 - Spark Dashboard
-    - Default user: `grafana` password: `1K7rYwg655Zl`
+    - Default user: `dashboard` password: `1K7rYwg655Zl`
 </details>
 
 
@@ -202,9 +202,32 @@ At the moment, we have only tested this locally using `microk8s`. Refer to the i
 
 If you are using Microk8s, below are the steps to install Nginx and PV with RWX support:
 
-```sh
+#### For macOS
+
+use the following command to install MicroK8s with specified resource limits:
+
+```
 # the requirements stated below are the minimum, feel free to adjust upwards as needed
 microk8s install --cpu 8 --mem 12 --disk 80
+```
+
+#### For Ubuntu
+
+install MicroK8s using:
+
+```
+sudo snap install microk8s --classic --channel=1.28
+```
+
+ensure you set the correct permissions for the kube configuration directory:
+
+```
+chmod 0700 ~/.kube
+```
+
+#### macOC and Ubuntu
+
+```sh
 microk8s enable hostpath-storage
 microk8s enable ingress
 
