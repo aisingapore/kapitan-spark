@@ -21,7 +21,7 @@ ADD --chown=spark:spark https://repo1.maven.org/maven2/org/apache/spark/spark-ha
 ADD --chown=spark:spark https://repo1.maven.org/maven2/ch/cern/sparkmeasure/spark-plugins_2.12/0.3/spark-plugins_2.12-0.3.jar $SPARK_HOME/jars
 ADD --chown=spark:spark https://repo1.maven.org/maven2/ch/cern/sparkmeasure/spark-measure_2.12/0.24/spark-measure_2.12-0.24.jar $SPARK_HOME/jars
 
-RUN chomod -R go+r $SPARK_HOME/jars
+RUN chmod -R go+r $SPARK_HOME/jars
 RUN apt update && apt upgrade -y && apt install -y software-properties-common unzip htop
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt update
