@@ -24,8 +24,9 @@ ADD --chown=spark:spark https://repo1.maven.org/maven2/ch/cern/sparkmeasure/spar
 # zeppelin
 ADD --chown=spark:spark https://repo1.maven.org/maven2/com/fasterxml/woodstox/woodstox-core/6.5.0/woodstox-core-6.5.0.jar $SPARK_HOME/jars
 ADD --chown=spark:spark https://repo1.maven.org/maven2/org/codehaus/woodstox/stax2-api/4.2.1/stax2-api-4.2.1.jar $SPARK_HOME/jars
-
+ADD --chown=spark:spark https://repo1.maven.org/maven2/org/apache/commons/commons-configuration2/2.11.0/commons-configuration2-2.11.0.jar $SPARK_HOME/jars
 RUN chmod -R go+r $SPARK_HOME/jars
+
 RUN apt update && apt upgrade -y && apt install -y software-properties-common unzip htop
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt update
