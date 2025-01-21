@@ -32,10 +32,10 @@ hive-metastore-postgresql:
     password: E9mZ424xCUt3
     database: metastore
   primary:
-      readinessProbe:
-        initialDelaySeconds: 300
-      livenessProbe:
-        initialDelaySeconds: 300
+    readinessProbe:
+      initialDelaySeconds: 300
+    livenessProbe:
+      initialDelaySeconds: 300
 
 ## Resource requests and limits: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
 resources:
