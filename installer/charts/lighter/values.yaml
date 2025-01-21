@@ -67,10 +67,10 @@ lighter-postgresql:
     password: mU233@t3PqXP
     database: lighter
   primary:
-      readinessProbe:
-        initialDelaySeconds: 300
-      livenessProbe:
-        initialDelaySeconds: 300
+    readinessProbe:
+      initialDelaySeconds: 300
+    livenessProbe:
+      initialDelaySeconds: 300
 
 s3a:
   endpoint: https://empty
