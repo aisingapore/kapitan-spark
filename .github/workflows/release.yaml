@@ -29,6 +29,12 @@ jobs:
         run: docker system prune -af --volumes
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
       - name: Build & Push Hive Metastore
         uses: docker/build-push-action@v4
         with:
@@ -51,6 +57,12 @@ jobs:
         run: docker system prune -af --volumes
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
       - name: Build & Push Spark
         uses: docker/build-push-action@v4
         with:
@@ -73,6 +85,12 @@ jobs:
         run: docker system prune -af --volumes
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
       - name: Build & Push Zeppelin
         uses: docker/build-push-action@v4
         with:
