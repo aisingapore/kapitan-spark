@@ -93,7 +93,7 @@ spec:
                         httpGet:
                             path: /health/readiness
                             port: 8080
-                        initialDelaySeconds: 15
+                        initialDelaySeconds: 300
                         periodSeconds: 15
                     resources:
                         {{- toYaml .Values.resources | trim  | nindent 25 }}
@@ -284,3 +284,7 @@ spec:
                 - name: pod-template
                   configMap:
                     name: {{ include "lighter.fullname" . }}-pod-template
+                # workaround PVC need bind to at least one pod otherwise cannot helm install   
+                - name: {{ include "lighter.fullname" . }}-storage
+                    persistentVolumeClaim:
+                    claimName: {{ include "lighter.fullname" . }}-storage

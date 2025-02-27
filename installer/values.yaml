@@ -7,16 +7,19 @@ hive-metastore:
   enabled: true # base component needed by other components
   
 spark-thrift-server:
-  enabled: true
+  enabled: false
 
 lighter:
-  enabled: true
+  enabled: false
 
 jupyterlab:
-  enabled: true
+  enabled: false
 
 spark-history-server:
   enabled: true
 
 spark-dashboard:
+  enabled: true
+
+zeppelin:
   enabled: true
