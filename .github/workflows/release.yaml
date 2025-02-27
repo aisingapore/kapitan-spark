@@ -24,6 +24,18 @@ jobs:
               - spark_version: 3.5.1
                 hadoop_version: 3.3.4
     steps:
+      - name: Check Disk Space Before Build
+        run: df -h
+
+      - name: Cleanup Docker Cache
+        run: docker system prune -af --volumes
+
+      - name: Cleanup APT Cache
+        run: sudo apt-get clean
+
+      - name: Check Disk Space After Cleanup
+        run: df -h
+
       - uses: actions/checkout@v2
 
       - name: Set up Docker Buildx
