@@ -53,3 +53,12 @@ jobs:
           file: ./spark_docker_image/Dockerfile
           push: true
           tags: ghcr.io/aisingapore/kapitan-spark/spark:${{ github.event.release.tag_name }}-spark${{ matrix.spark_version }}
+
+      - name: Build Zeppelin and push to ghcr.io
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64
+          file: ./installer/charts/zeppelin/Dockerfile
+          push: true
+          tags: ghcr.io/aisingapore/kapitan-spark/zeppelin:${{ github.event.release.tag_name }}-spark${{ matrix.spark_version }}
