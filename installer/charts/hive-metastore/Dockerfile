@@ -1,4 +1,4 @@
-FROM openjdk:25-slim
+FROM openjdk:11-slim-buster
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 #ARG HADOOP_VERSION=3.2.0
 ARG HADOOP_VERSION=3.3.4
