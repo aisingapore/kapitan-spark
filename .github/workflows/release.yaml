@@ -24,18 +24,6 @@ jobs:
               - spark_version: 3.5.1
                 hadoop_version: 3.3.4
     steps:
-      - name: Check Disk Space Before Build
-        run: df -h
-
-      - name: Cleanup Docker Cache
-        run: docker system prune -af --volumes
-
-      - name: Cleanup APT Cache
-        run: sudo apt-get clean
-
-      - name: Check Disk Space After Cleanup
-        run: df -h
-
       - uses: actions/checkout@v2
 
       - name: Set up Docker Buildx
@@ -66,11 +54,4 @@ jobs:
           push: true
           tags: ghcr.io/aisingapore/kapitan-spark/spark:${{ github.event.release.tag_name }}-spark${{ matrix.spark_version }}
 
-      - name: Build Zeppelin and push to ghcr.io
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          platforms: linux/amd64
-          file: ./installer/charts/zeppelin/Dockerfile
-          push: true
-          tags: ghcr.io/aisingapore/kapitan-spark/zeppelin:${{ github.event.release.tag_name }}-spark${{ matrix.spark_version }}
+
