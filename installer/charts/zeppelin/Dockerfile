@@ -25,7 +25,7 @@ RUN find /opt/conda/ -follow -type f -name '*.a' -delete && \
 ENV PATH=/opt/conda/envs/python_3_with_R/bin:/opt/conda/bin:$PATH
 
 
-COPY --chown=185:185 --from=ghcr.io/aisingapore/kapitan-spark/spark:0.0.6-spark3.5.1 /opt/spark/ /opt/spark/
+COPY --chown=185:185 --from=ghcr.io/aisingapore/kapitan-spark/spark:0.0.7-spark3.5.1 /opt/spark/ /opt/spark/
 
 # below is custom to follow spark docker image
 RUN groupadd -r spark -g 185 && \
