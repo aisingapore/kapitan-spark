@@ -2,7 +2,8 @@ FROM apache/zeppelin:0.12.0
 
 USER root
 
-COPY env_python_3_with_R.yml /tmp/env_python_3_with_R.yml
+COPY ./installer/charts/zeppelin/env_python_3_with_R.yml /tmp/env_python_3_with_R.yml
+
 RUN rm -rf /opt/conda
 ARG miniconda_version="py312_24.7.1-0"
 ARG miniconda_sha256="33442cd3813df33dcbb4a932b938ee95398be98344dff4c30f7e757cd2110e4f"
@@ -16,7 +17,7 @@ RUN set -ex && \
     export PATH=/opt/conda/bin:$PATH && \
     conda config --set always_yes yes --set changeps1 no && \
     conda env update -f  /tmp/env_python_3_with_R.yml --prune && \
-    conda clean --all -y
+    conda clean --all -y && rm /tmp/env_python_3_with_R.yml
 
 # Optional: Remove some unnecessary files to reduce size
 RUN find /opt/conda/ -follow -type f -name '*.a' -delete && \
