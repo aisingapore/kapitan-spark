@@ -26,6 +26,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Free Up Disk Space
+        run: docker system prune -af --volumes
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -45,6 +48,9 @@ jobs:
           push: true
           tags: ghcr.io/aisingapore/kapitan-spark/hive-metastore:${{ github.event.release.tag_name }}-hadoop${{ matrix.hadoop_version }}
 
+      - name: Free Up Disk Space
+        run: docker system prune -af --volumes
+        
       - name: Build Spark docker image and push to ghcr.io
         uses: docker/build-push-action@v4
         with:
