@@ -123,3 +123,8 @@ influx:
 # when using SparkFiles.getRootDirectory()
 local:
   dir: /tmp
+
+# Only need to fill in if install on isolated namespace
+hiveMetastore:
+  # only need this value if install spark thrift server subchart standalone
+  namespace: helmall
