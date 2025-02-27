@@ -1,0 +1,125 @@
+image:
+  repository: secondcomet/zeppelin-custom
+  tag: latest
+  pullPolicy: Always
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+env:
+  # 'serviceDomain' is a Domain name to use for accessing Zeppelin UI.
+  # Should point IP address of 'zeppelin-server' service.
+  #
+  # Wildcard subdomain need to be point the same IP address to access service inside of Pod (such as SparkUI).
+  # i.e. if service domain is 'local.zeppelin-project.org', DNS configuration should make 'local.zeppelin-project.org' and '*.local.zeppelin-project.org' point the same address.
+  #
+  # Default value is 'local.zeppelin-project.org' while it points 127.0.0.1 and `kubectl port-forward zeppelin-server` will give localhost to connects.
+  # If you have your ingress controller configured to connect to `zeppelin-server` service and have a domain name for it (with wildcard subdomain point the same address), you can replace serviceDomain field with your own domain.
+  SERVICE_DOMAIN: "spark-bundle-zeppelin"
+  ZEPPELIN_K8S_SPARK_CONTAINER_IMAGE: ghcr.io/aisingapore/kapitan-spark/spark:0.0.6-spark3.5.1
+  ZEPPELIN_K8S_CONTAINER_IMAGE: secondcomet/zeppelin-custom:latest
+  ZEPPELIN_HOME: /opt/zeppelin
+  ZEPPELIN_PORT: 8080
+  ZEPPELIN_SERVER_RPC_PORTRANGE: 12320:12320
+  FLINK_HOME: /opt/flink
+  SPARK_MASTER: k8s://https://kubernetes.default.svc
+  SPARK_HOME: /opt/spark
+# extraEnvVarsCM -- Extra env configmap name
+extraEnvVarsCM: ""
+
+# extraEnvVarsSecret -- Extra env secret name
+extraEnvVarsSecret: ""
+
+service:
+  # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
+  type: ClusterIP
+  # optional no need value
+  clusterIP:
+  # Only need to fill up if service type is NodePort
+  nodePortLighterPort: 37001
+  annotations: {}
+    # networking.gke.io/load-balancer-type: "Internal"
+    # service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+
+ingress:
+  enabled: true
+  annotations:
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+
+    # acme.cert-manager.io/http01-edit-in-place: "true"
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+    # cert-manager.io/issue-temporary-certificate: "true"
+    # kubernetes.io/ingress.class: nginx   
+  # leave empty if do not have dns name
+  host:
+  http:
+    paths:
+    - backend:
+        service:
+          name: "{{ include \"zeppelin.fullname\" . }}"
+          port:
+            number: 8080
+      path: /zeppelin
+      pathType: Prefix
+  tls: []
+    # - hosts:
+    #    - spark-thrift-server.begonia.aisingapore.net
+    #   secretName: chart-example-tls
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+
+## Auto-scaling (hpa) configuration
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+replicaCount: 1
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+s3a:
+  endpoint: https://necs.nus.edu.sg #https://empty
+
+python:
+  user:
+    # allow user to pip install -u <package> to this network file system shared folder
+    base: /opt/spark/work-dir/.python_libs
+
+spark:
+  history:
+    url:
+    eventLog:
+      enabled: true
+      # use Kubernetes Persistence volume, put false if using blob storage
+      usePVC: true
+      # can also use blob storage s3a
+      dir: /opt/spark/event-logs
+
+influx:
+  enabled: true
+  namespace: helmall
+
+# when using SparkFiles.getRootDirectory()
+local:
+  dir: /tmp

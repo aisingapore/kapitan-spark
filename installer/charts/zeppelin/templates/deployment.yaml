@@ -115,8 +115,7 @@ spec:
         emptyDir: {}
       - name: {{ include "zeppelin.fullname" . }}-notebook-volume 
         persistentVolumeClaim:
-          claimName: {{ include "zeppelin.fullname" . }}-notebooks-storage
-      # workaround PVC need bind to at least one pod otherwise cannot helm install   
+          claimName: {{ include "zeppelin.fullname" . }}-notebooks-storage  
       - name: {{ include "zeppelin.fullname" . }}-storage
         persistentVolumeClaim:
           claimName: {{ include "zeppelin.fullname" . }}-storage
