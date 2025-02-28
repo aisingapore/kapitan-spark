@@ -28,7 +28,8 @@ ADD --chown=spark:spark https://repo1.maven.org/maven2/org/apache/commons/common
 RUN chmod -R go+r $SPARK_HOME/jars
 
 RUN apt update && apt upgrade -y && apt install -y software-properties-common unzip htop
-RUN add-apt-repository ppa:deadsnakes/nightly
+RUN apt-get install --reinstall ca-certificates
+RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt update
 RUN apt install -y python3.11
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
