@@ -31,7 +31,13 @@ RUN apt update && apt upgrade -y && apt install -y software-properties-common un
 RUN apt-get install --reinstall ca-certificates
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt update
-RUN apt install -y python3.11
+#RUN apt install -y python3.11
+# Update and install Python 3.11.9
+RUN apt install -y python3.11=3.11.9-1~22.04 
+
+
+
+
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
 RUN update-alternatives --config python3
 RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11

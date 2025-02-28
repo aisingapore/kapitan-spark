@@ -5,7 +5,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.11.11
+  - python=3.11
   - pycodestyle
   - scipy
   - grpcio
