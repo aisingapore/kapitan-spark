@@ -1407,6 +1407,12 @@ data:
                   "type": "string",
                   "description": "custom"
               },
+              "spark.sql.warehouse.dir": {
+                  "name": "spark.sql.warehouse.dir",
+                  "value": "{{ .Values.local.dir }}",
+                  "type": "string",
+                  "description": "custom"
+              },
          
               # custom end
 

@@ -21,7 +21,7 @@ Components:
 - [Jupyter Lab](https://github.com/jupyterlab/jupyterlab)
 - [SparkMagic Kernel](https://github.com/jupyter-incubator/sparkmagic)
 - [Spark Dashboard](https://github.com/cerndb/spark-dashboard)
-
+- [Zeppelin](https://github.com/apache/zeppelin) not supported ARM64
 
 
 We invite you to try this out and let us know any issues/feedback you have via Github Issues. Do let us know what adaptions you have done for your setup via Github Discussions.
@@ -61,7 +61,7 @@ Requirements:
     - Spark History Server at http://KUBERNETES_NODE_IP/spark-history-server
     - Lighter UI http://KUBERNETES_NODE_IP/lighter 
     - Spark Dashboard http://KUBERNETES_NODE_IP/grafana
-
+    - Zeppelin http://KUBERNETES_NODE_IP/zeppelin
 <!-- </details> -->
 
 
@@ -109,6 +109,14 @@ Requirements:
     - Default user: `dataOps` password: `5Wmi95w4`
 - Spark Dashboard
     - Default user: `dashboard` password: `1K7rYwg655Zl`
+
+- Zeppelin 
+    - You may rebuild the image using the Dockerfile `zeppelin/Dockerfile` 
+    - After rebuilding, modify the following keys in `values.yaml`: `image.repository`, `image.tag`, `
+ZEPPELIN_K8S_CONTAINER_IMAGE` in `values.yaml`.
+    - If Spark History Server uses Persistent Volumes to save event logs instead of Blob storage S3a, ensure to install it with `spark-history-server` component on the same Kubernetes namespace.
+    - Dependencies: `hive-metastore`, `spark-dashboard` and `spark-history-server` components. The latter can be turned off in `values.yaml`.
+    - Default user: `dataOps` password: `Tz44828IX60O`
 </details>
 
 

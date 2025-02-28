@@ -72,7 +72,7 @@ spec:
           containerPort: 12320
         env:
         - name: SERVICE_DOMAIN
-          value: {{ .Values.env.SERVICE_DOMAIN }}
+          value: {{ if .Values.env.SERVICE_DOMAIN }}{{ .Values.env.SERVICE_DOMAIN }}{{ else }}{{ include "zeppelin.fullname" . }}{{ end }}
         - name: POD_UID
           valueFrom:
             fieldRef:
