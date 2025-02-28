@@ -2,7 +2,7 @@ FROM apache/spark:3.5.1
 
 
 USER root
-ENV DELTA_LAKE_VER 3.0.0
+ENV DELTA_LAKE_VER=3.0.0
 
 # Adding relevant jar files to SPARK_HOME/jars
 ADD --chown=spark:spark "https://repo1.maven.org/maven2/io/delta/delta-contribs_2.12/${DELTA_LAKE_VER}/delta-contribs_2.12-${DELTA_LAKE_VER}.jar" $SPARK_HOME/jars
@@ -28,7 +28,7 @@ ADD --chown=spark:spark https://repo1.maven.org/maven2/org/apache/commons/common
 RUN chmod -R go+r $SPARK_HOME/jars
 
 RUN apt update && apt upgrade -y && apt install -y software-properties-common unzip htop
-RUN add-apt-repository ppa:deadsnakes/ppa
+RUN add-apt-repository ppa:deadsnakes/nightly
 RUN apt update
 RUN apt install -y python3.11
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
