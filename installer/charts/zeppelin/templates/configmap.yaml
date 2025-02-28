@@ -322,7 +322,7 @@ data:
 
   shiro.ini: |
     [users]
-    admin = Tz44828IX60O, admin
+    dataOps = Tz44828IX60O, admin
 
     [main]
     sessionManager = org.apache.shiro.web.session.mgt.DefaultWebSessionManager
@@ -365,9 +365,7 @@ data:
           <name>zeppelin.server.context.path</name>
           <value>{{ index .Values.ingress.http.paths 0 "path" }}</value>
       </property>
-      {{end}}
-
-      
+      {{end}}      
       </configuration>
 
   interpreter.json: |
@@ -1099,7 +1097,7 @@ data:
               },
               "spark.hadoop.hive.metastore.uris": {
                 "name": "spark.hadoop.hive.metastore.uris",
-                "value": "{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Name }}-hive-metastore{{ else }}{{ required "hive metastore installed full service name required" $hiveMetastoreServiceName }}{{ end }}.{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Namespace }}{{ else }}{{ required "hive metastore installed namespace required" .Values.hiveMetastore.namespace }}{{ end }}.svc.cluster.local:9083",
+                "value": "thrift://{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Name }}-hive-metastore{{ else }}{{ required "hive metastore installed full service name required" $hiveMetastoreServiceName }}{{ end }}.{{ if and .Values.global ( .Values.global.isTopLevel) }}{{ .Release.Namespace }}{{ else }}{{ required "hive metastore installed namespace required" .Values.hiveMetastore.namespace }}{{ end }}.svc.cluster.local:9083",
                 "type": "string",
                 "description": "custom"
               },
@@ -1409,7 +1407,7 @@ data:
                   "type": "string",
                   "description": "custom"
               },
-
+         
               # custom end
 
               "SPARK_HOME": {
