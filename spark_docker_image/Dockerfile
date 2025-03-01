@@ -40,7 +40,6 @@ RUN apt update && apt upgrade -y && apt install -y software-properties-common un
 
 COPY ./installer/charts/zeppelin/env_python_3_with_R.yml /tmp/env_python_3_with_R.yml
 ARG miniconda_version="py312_24.7.1-0"
-ARG miniconda_sha256="33442cd3813df33dcbb4a932b938ee95398be98344dff4c30f7e757cd2110e4f"
 # Install Miniconda with no base environment
 RUN set -ex && \
     ARCH=$(uname -m) && \
@@ -52,7 +51,7 @@ RUN set -ex && \
         echo "Unsupported architecture: $ARCH"; exit 1; \
     fi && \
     wget -nv https://repo.anaconda.com/miniconda/Miniconda3-${miniconda_version}-${MINICONDA_OS}.sh -O miniconda.sh && \
-    echo "${miniconda_sha256} miniconda.sh" > anaconda.sha256 && \
+    bash miniconda.sh -b -p /opt/conda && \
     sha256sum --strict -c anaconda.sha256 && \
     bash miniconda.sh -b -p /opt/conda && \
     rm miniconda.sh && \
