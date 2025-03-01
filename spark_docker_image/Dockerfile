@@ -52,8 +52,6 @@ RUN set -ex && \
     fi && \
     wget -nv https://repo.anaconda.com/miniconda/Miniconda3-${miniconda_version}-${MINICONDA_OS}.sh -O miniconda.sh && \
     bash miniconda.sh -b -p /opt/conda && \
-    sha256sum --strict -c anaconda.sha256 && \
-    bash miniconda.sh -b -p /opt/conda && \
     rm miniconda.sh && \
     export PATH=/opt/conda/bin:$PATH && \
     conda config --set always_yes yes --set changeps1 no && \
