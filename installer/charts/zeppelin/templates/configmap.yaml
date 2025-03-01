@@ -320,33 +320,6 @@ data:
       {% endif %}
     `}}
 
-  shiro.ini: |
-    [users]
-    dataOps = Tz44828IX60O, admin
-
-    [main]
-    sessionManager = org.apache.shiro.web.session.mgt.DefaultWebSessionManager
-    cookie = org.apache.shiro.web.servlet.SimpleCookie
-    cookie.name = JSESSIONID
-    cookie.httpOnly = true
-    sessionManager.sessionIdCookie = $cookie
-    securityManager.sessionManager = $sessionManager
-    securityManager.sessionManager.globalSessionTimeout = 86400000
-    shiro.loginUrl = /api/login
-    [roles]
-    admin = *
-    [urls]
-    /api/version = anon
-    /api/cluster/address = anon
-    /api/interpreter/setting/restart/** = authc
-    /api/interpreter/** = authc, roles[admin]
-    /api/notebook-repositories/** = authc, roles[admin]
-    /api/configurations/** = authc, roles[admin]
-    /api/credential/** = authc, roles[admin]
-    /api/admin/** = authc, roles[admin]
-    /** = authc
-
-
 
 
       
@@ -365,7 +338,14 @@ data:
           <name>zeppelin.server.context.path</name>
           <value>{{ index .Values.ingress.http.paths 0 "path" }}</value>
       </property>
-      {{end}}      
+      {{end}}    
+
+      <property>
+          <name>zeppelin.interpreter.lifecyclemanager.timeout.threshold</name>
+          <value>7200000</value>  <!-- Shutdown after 2 hours of inactivity (in ms) -->
+      </property>
+
+
       </configuration>
 
   interpreter.json: |
@@ -1436,7 +1416,7 @@ data:
               },
               "spark.app.name": {
                 "name": "spark.app.name",
-                "value": "",
+                "value": "kapitanzeppelin",
                 "type": "string",
                 "description": "The name of spark application."
               },

@@ -34,7 +34,7 @@ spec:
         imagePullPolicy: {{.Values.image.pullPolicy}}
         command: ["sh", "-c", "cp -r /opt/zeppelin/conf/* /zeppelin_conf"]
         volumeMounts:
-        - name: {{ include "zeppelin.fullname" . }}-custom-files
+        - name: {{ include "zeppelin.fullname" . }}-secret-files
           mountPath: /opt/zeppelin/conf/shiro.ini
           subPath: shiro.ini
         - name: {{ include "zeppelin.fullname" . }}-custom-files
@@ -111,6 +111,9 @@ spec:
       - name: {{ include "zeppelin.fullname" . }}-custom-files
         configMap: 
            name: {{ include "zeppelin.fullname" . }}-custom-files
+      - name: {{ include "zeppelin.fullname" . }}-secret-files
+        secret: 
+           secretName: {{ include "zeppelin.fullname" . }}-shiro-secret
       - name: {{ include "zeppelin.fullname" . }}-conf
         emptyDir: {}
       - name: {{ include "zeppelin.fullname" . }}-notebook-volume 

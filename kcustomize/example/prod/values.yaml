@@ -206,3 +206,50 @@ spark-dashboard:
       passwordPairs:
           user: influx
           password: QeS87mkUg5Uj
+
+zeppelin:
+    image:
+      repository: ghcr.io/aisingapore/kapitan-spark/zeppelin
+      tag: 0.0.7-spark3.5.1
+      pullPolicy: IfNotPresent
+
+    imagePullSecrets: []
+    nameOverride: ""
+    fullnameOverride: ""
+
+    env:
+      SERVICE_DOMAIN: ""
+      ZEPPELIN_K8S_SPARK_CONTAINER_IMAGE: ghcr.io/aisingapore/kapitan-spark/spark:0.0.7-spark3.5.1
+      ZEPPELIN_K8S_CONTAINER_IMAGE: ghcr.io/aisingapore/kapitan-spark/zeppelin:0.0.7-spark3.5.1
+    
+    service:
+      # Options are ClusterIP (if use Ingress), NodePort, LoadBalancer
+      type: ClusterIP
+      # optional no need value
+      clusterIP:
+      # Only need to fill up if service type is NodePort
+      nodePortLighterPort: 37001
+      annotations: {}
+        # networking.gke.io/load-balancer-type: "Internal"
+        # service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+    ingress:
+      enabled: true
+      annotations:
+      host:
+      tls: []
+        # - hosts:
+        #    - spark-thrift-server.begonia.aisingapore.net
+        #   secretName: chart-example-tls
+
+    s3a:
+      endpoint: https://empty
+    spark:
+      history:
+        url:
+        eventLog:
+          usePVC: true
+          dir: /opt/spark/event-logs
+
+    influx:
+      enabled: true
