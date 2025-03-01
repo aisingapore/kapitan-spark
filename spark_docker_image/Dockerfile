@@ -43,7 +43,15 @@ ARG miniconda_version="py312_24.7.1-0"
 ARG miniconda_sha256="33442cd3813df33dcbb4a932b938ee95398be98344dff4c30f7e757cd2110e4f"
 # Install Miniconda with no base environment
 RUN set -ex && \
-    wget -nv https://repo.anaconda.com/miniconda/Miniconda3-${miniconda_version}-Linux-x86_64.sh -O miniconda.sh && \
+    ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then \
+        MINICONDA_OS="Linux-x86_64"; \
+    elif [ "$ARCH" = "aarch64" ]; then \
+        MINICONDA_OS="Linux-aarch64"; \
+    else \
+        echo "Unsupported architecture: $ARCH"; exit 1; \
+    fi && \
+    wget -nv https://repo.anaconda.com/miniconda/Miniconda3-${miniconda_version}-${MINICONDA_OS}.sh -O miniconda.sh && \
     echo "${miniconda_sha256} miniconda.sh" > anaconda.sha256 && \
     sha256sum --strict -c anaconda.sha256 && \
     bash miniconda.sh -b -p /opt/conda && \

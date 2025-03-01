@@ -1,5 +1,5 @@
 FROM apache/zeppelin:0.12.0
-
+# apache/zeppelin only support x86, no arm64
 USER root
 
 COPY ./installer/charts/zeppelin/env_python_3_with_R.yml /tmp/env_python_3_with_R.yml
