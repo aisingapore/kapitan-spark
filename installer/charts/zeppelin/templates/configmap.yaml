@@ -257,7 +257,9 @@ data:
       rules:
       - apiGroups: [""]
         resources: ["pods", "services", "configmaps"]
-        verbs: ["create", "get", "update", "list", "delete", "watch" ]
+        # custom start, added deletecollection 
+        verbs: ["create", "get", "update", "list", "delete", "deletecollection", "watch" ]
+        # custom end
       ---
       kind: RoleBinding
       apiVersion: rbac.authorization.k8s.io/v1
@@ -341,8 +343,34 @@ data:
       {{end}}    
 
       <property>
-          <name>zeppelin.interpreter.lifecyclemanager.timeout.threshold</name>
-          <value>7200000</value>  <!-- Shutdown after 2 hours of inactivity (in ms) -->
+        <name>zeppelin.interpreter.connect.timeout</name>
+        <value>1200s</value>
+        <description>Interpreter process connect timeout. Default time unit is msec.</description>
+      </property>
+
+      <property>
+        <name>zeppelin.interpreter.lifecyclemanager.timeout.checkinterval</name>
+        <value>3m</value>
+        <description>Interval to checking whether interpreter is time out</description>
+      </property>
+
+      <property>
+        <name>zeppelin.interpreter.lifecyclemanager.class</name>
+        <value>org.apache.zeppelin.interpreter.lifecycle.TimeoutLifecycleManager</value>
+        <description>LifecycleManager class for managing the lifecycle of interpreters, by default interpreter will
+        be closed after timeout</description>
+      </property>
+
+      <property>
+        <name>zeppelin.interpreter.lifecyclemanager.timeout.threshold</name>
+        <value>1h</value>
+        <description>Interpreter timeout threshold, by default it is 1 hour</description>
+      </property>
+
+      <property>
+        <name>zeppelin.interpreter.output.limit</name>
+        <value>204800</value>
+        <description>Output message from interpreter exceeding the limit will be truncated</description>
       </property>
 
 
@@ -1393,6 +1421,18 @@ data:
                   "type": "string",
                   "description": "custom"
               },
+              "spark.app.name": {
+                "name": "spark.app.name",
+                "value": "{{ include "zeppelin.fullname" . }}",
+                "type": "string",
+                "description": "The name of spark application."
+              },
+              "spark.scheduler.mode": {
+                "name": "spark.scheduler.mode",
+                "value": "FIFO",
+                "type": "string",
+                "description": "custom changed this because otherwise Zeppelin uses FAIR"
+              },
          
               # custom end
 
@@ -1413,12 +1453,6 @@ data:
                 "value": "",
                 "type": "string",
                 "description": "The deploy mode of Spark driver program, either \"client\" or \"cluster\", Which means to launch driver program locally (\"client\") or remotely (\"cluster\") on one of the nodes inside the cluster."
-              },
-              "spark.app.name": {
-                "name": "spark.app.name",
-                "value": "kapitanzeppelin",
-                "type": "string",
-                "description": "The name of spark application."
               },
               "spark.driver.cores": {
                 "name": "spark.driver.cores",
@@ -1606,7 +1640,7 @@ data:
               {
                 "name": "spark",
                 "class": "org.apache.zeppelin.spark.SparkInterpreter",
-                "defaultInterpreter": true,
+                "defaultInterpreter": false,
                 "editor": {
                   "language": "scala",
                   "editOnDblClick": false,
@@ -1628,7 +1662,7 @@ data:
               {
                 "name": "pyspark",
                 "class": "org.apache.zeppelin.spark.PySparkInterpreter",
-                "defaultInterpreter": false,
+                "defaultInterpreter": true,
                 "editor": {
                   "language": "python",
                   "editOnDblClick": false,
