@@ -101,7 +101,8 @@ data:
           app: {{zeppelin.k8s.interpreter.pod.name}}
           interpreterGroupId: {{zeppelin.k8s.interpreter.group.id}}
           interpreterSettingName: {{zeppelin.k8s.interpreter.setting.name}}
-          user: {{ zeppelin.k8s.interpreter.user }}
+          # need to comment out not support login with email@company.com has special character @
+          # user: {{ zeppelin.k8s.interpreter.user }}
         {% if zeppelin.k8s.server.uid is defined %}
         ownerReferences:
         - apiVersion: v1
@@ -371,6 +372,12 @@ data:
         <name>zeppelin.interpreter.output.limit</name>
         <value>204800</value>
         <description>Output message from interpreter exceeding the limit will be truncated</description>
+      </property>
+
+      <property>
+        <name>zeppelin.notebook.public</name>
+        <value>false</value>
+        <description>Make notebook public by default when created, private otherwise</description>
       </property>
 
 
