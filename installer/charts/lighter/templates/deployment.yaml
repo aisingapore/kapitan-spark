@@ -82,7 +82,12 @@ spec:
             {{- if .Values.image.pullSecrets }}
             imagePullSecrets:
             {{ toYaml .Values.image.pullSecrets | indent 8 }}
-            {{- end }}           
+            {{- end }}   
+            securityContext:
+                runAsGroup: 185 
+                runAsUser: 185 
+                fsGroup: 185
+                fsGroupChangePolicy: OnRootMismatch      
             containers:
                 -   image: "{{.Values.image.repository}}:{{ .Values.image.tag }}"
                     imagePullPolicy: "{{.Values.image.pullPolicy}}"

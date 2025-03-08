@@ -25,7 +25,10 @@ spec:
       {{- end }}
       serviceAccountName: "{{ include "zeppelin.fullname" . }}-sa"
       securityContext:
-         allowPrivilegeEscalation: false  
+         runAsGroup: 185 
+         runAsUser: 185 
+         fsGroup: 185
+         fsGroupChangePolicy: OnRootMismatch
       initContainers:
       - name: zeppelin-conf-init
         securityContext:

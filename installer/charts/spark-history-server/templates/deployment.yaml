@@ -15,6 +15,11 @@ spec:
       labels:
         name: {{ include "spark-history-server.fullname" . }}
     spec:
+      securityContext:
+          runAsGroup: 185 
+          runAsUser: 185 
+          fsGroup: 185
+          fsGroupChangePolicy: OnRootMismatch
       {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
       {{ toYaml .Values.image.pullSecrets | indent 8 }}
@@ -50,12 +55,13 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           {{ if .Values.eventLog.usePVC }}
           volumeMounts:
-          - mountPath: "{{ .Values.eventLog.dir }}"
-            name: event-logs
+            - mountPath: "{{ .Values.eventLog.dir }}"
+              name: event-logs
           {{ end }}
       {{ if .Values.eventLog.usePVC }}
       volumes:
-      - name: event-logs
-        persistentVolumeClaim:
-            claimName: {{ include "spark-history-server.fullname" . }}-event-logs
+        - name: event-logs
+          persistentVolumeClaim:
+              claimName: {{ include "spark-history-server.fullname" . }}-event-logs
       {{ end }}
+

@@ -23,7 +23,7 @@ spec:
             - {{ . | quote }}
             {{- end }}
         {{- if .secretName  }}
-        secretName: {{ .secretName }}
+          secretName: {{ .secretName }}
         {{- end }}
 
         {{- end }}
