@@ -93,7 +93,9 @@ spec:
                     imagePullPolicy: "{{.Values.image.pullPolicy}}"
                     name: lighter
                     securityContext:
-                        allowPrivilegeEscalation: false                   
+                        allowPrivilegeEscalation: false  
+                        runAsGroup: 10001 
+                        runAsUser: 10000                  
                     readinessProbe:
                         httpGet:
                             path: /health/readiness
@@ -176,7 +178,7 @@ spec:
                                         "spark.eventLog.dir": "{{ .Values.spark.history.eventLog.dir }}",
                                         "spark.eventLog.enabled": "{{ .Values.spark.history.eventLog.enabled }}",
                                         "spark.local.dir": "{{ .Values.local.dir }}",
-                                        "spark.sql.warehouse.dir": "{{ .Values.local.dir }}",
+                                        "spark.sql.warehouse.dir": "{{ .Values.local.dir }}",             
 
                                         {{ if .Values.influx.enabled }}
                                         "spark.metrics.conf.*.sink.graphite.class":"org.apache.spark.metrics.sink.GraphiteSink",
@@ -254,7 +256,7 @@ spec:
                                         "spark.eventLog.dir": "{{ .Values.spark.history.eventLog.dir }}",
                                         "spark.eventLog.enabled": "{{ .Values.spark.history.eventLog.enabled }}",
                                         "spark.local.dir": "{{ .Values.local.dir }}",
-                                        "spark.sql.warehouse.dir": "{{ .Values.local.dir }}",
+                                        "spark.sql.warehouse.dir": "{{ .Values.local.dir }}",                               
 
                                         {{ if .Values.influx.enabled }}
                                         "spark.metrics.conf.*.sink.graphite.class":"org.apache.spark.metrics.sink.GraphiteSink",

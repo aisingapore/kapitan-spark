@@ -1,7 +1,7 @@
 image:
-  repository: ghcr.io/cometta/lighter
+  repository: ghcr.io/exacaster/lighter
   pullPolicy: IfNotPresent
-  tag: "arm64-spark3.5.1"
+  tag: "0.1.3-spark3.5.4"
   # pullSecrets:
   # - name: myRegistryKeySecretName
   spark:
