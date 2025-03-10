@@ -1440,6 +1440,21 @@ data:
                 "type": "string",
                 "description": "custom changed this because otherwise Zeppelin uses FAIR"
               },
+              "spark.rdd.compress": {
+                "name": "spark.rdd.compress",
+                "value": true,
+                "type": "checkbox",
+                "description": ""
+              },
+              ### below is super important, otherwise can't run TPCDS benchmark
+              "spark.kubernetes.memoryOverheadFactor": {
+                "name": "spark.kubernetes.memoryOverheadFactor",
+                "value": 0.4,
+                "type": "number",
+                "description": ""
+              },
+              
+
          
               # custom end
 
