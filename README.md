@@ -110,6 +110,7 @@ Requirements:
 - Spark Dashboard
     - Default user: `dashboard` password: `1K7rYwg655Zl`
 
+
 - Zeppelin 
     - You may rebuild the image using the Dockerfile `zeppelin/Dockerfile` 
     - After rebuilding, modify the following keys in `values.yaml`: `image.repository`, `image.tag`, `
@@ -117,6 +118,7 @@ ZEPPELIN_K8S_CONTAINER_IMAGE` in `values.yaml`.
     - If Spark History Server uses Persistent Volumes to save event logs instead of Blob storage S3a, ensure to install it with `spark-history-server` component on the same Kubernetes namespace.
     - Dependencies: `hive-metastore`, `spark-dashboard` and `spark-history-server` components. The latter can be turned off in `values.yaml`.
     - Default user: `dataOps` password: `Tz44828IX60O`
+
 </details>
 
 
