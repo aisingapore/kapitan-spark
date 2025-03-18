@@ -82,18 +82,25 @@ spec:
             {{- if .Values.image.pullSecrets }}
             imagePullSecrets:
             {{ toYaml .Values.image.pullSecrets | indent 8 }}
-            {{- end }}           
+            {{- end }}   
+            securityContext:
+                runAsGroup: 185 
+                runAsUser: 185 
+                fsGroup: 185
+                fsGroupChangePolicy: OnRootMismatch      
             containers:
                 -   image: "{{.Values.image.repository}}:{{ .Values.image.tag }}"
                     imagePullPolicy: "{{.Values.image.pullPolicy}}"
                     name: lighter
                     securityContext:
-                        allowPrivilegeEscalation: false                   
+                        allowPrivilegeEscalation: false  
+                        runAsGroup: 10001 
+                        runAsUser: 10000                  
                     readinessProbe:
                         httpGet:
                             path: /health/readiness
                             port: 8080
-                        initialDelaySeconds: 15
+                        initialDelaySeconds: 300
                         periodSeconds: 15
                     resources:
                         {{- toYaml .Values.resources | trim  | nindent 25 }}
@@ -171,6 +178,7 @@ spec:
                                         "spark.eventLog.dir": "{{ .Values.spark.history.eventLog.dir }}",
                                         "spark.eventLog.enabled": "{{ .Values.spark.history.eventLog.enabled }}",
                                         "spark.local.dir": "{{ .Values.local.dir }}",
+                                        "spark.sql.warehouse.dir": "{{ .Values.local.dir }}",             
 
                                         {{ if .Values.influx.enabled }}
                                         "spark.metrics.conf.*.sink.graphite.class":"org.apache.spark.metrics.sink.GraphiteSink",
@@ -248,6 +256,7 @@ spec:
                                         "spark.eventLog.dir": "{{ .Values.spark.history.eventLog.dir }}",
                                         "spark.eventLog.enabled": "{{ .Values.spark.history.eventLog.enabled }}",
                                         "spark.local.dir": "{{ .Values.local.dir }}",
+                                        "spark.sql.warehouse.dir": "{{ .Values.local.dir }}",                               
 
                                         {{ if .Values.influx.enabled }}
                                         "spark.metrics.conf.*.sink.graphite.class":"org.apache.spark.metrics.sink.GraphiteSink",
@@ -284,3 +293,7 @@ spec:
                 - name: pod-template
                   configMap:
                     name: {{ include "lighter.fullname" . }}-pod-template
+                # workaround PVC need bind to at least one pod otherwise cannot helm install   
+                - name: {{ include "lighter.fullname" . }}-storage
+                  persistentVolumeClaim:
+                    claimName: {{ include "lighter.fullname" . }}-storage

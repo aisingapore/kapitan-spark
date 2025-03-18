@@ -37,13 +37,16 @@ spec:
           containerPort: 3000
           protocol: TCP
         livenessProbe:
+          initialDelaySeconds: 300
           httpGet:
             path: healthz
             port: http
         readinessProbe:
+          initialDelaySeconds: 300
           httpGet:
             path: healthz
             port: http
+
         resources:
             {{- toYaml .Values.grafana.resources | nindent 12 }}
         env:

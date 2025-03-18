@@ -1,0 +1,188 @@
+﻿{
+  "paragraphs": [
+    {
+      "text": "%spark.conf\nspark.driver.memory 12G\nspark.executor.memory 6G\nspark.kubernetes.executor.podNamePrefix tpcds-worker",
+      "user": "cheewei@aisingapore.org",
+      "dateUpdated": "2025-03-10T10:33:17+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "editorMode": "ace/mode/text",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true,
+        "editorSetting": {
+          "language": "text",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1741573492851_925310398",
+      "id": "paragraph_1740736246769_2136612375",
+      "dateCreated": "2025-03-10T02:24:52+0000",
+      "dateStarted": "2025-03-10T10:33:17+0000",
+      "dateFinished": "2025-03-10T10:33:17+0000",
+      "status": "FINISHED",
+      "focus": true,
+      "$$hashKey": "object:12818"
+    },
+    {
+      "text": "%pyspark\n!pip install tpcds_pyspark sparkmeasure plotly kaleido --user",
+      "user": "anonymous",
+      "dateUpdated": "2025-03-10T02:25:21+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "editorMode": "ace/mode/scala",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true,
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1741573492853_1496522644",
+      "id": "paragraph_1740733467102_1127487869",
+      "dateCreated": "2025-03-10T02:24:52+0000",
+      "dateStarted": "2025-03-10T02:25:21+0000",
+      "dateFinished": "2025-03-10T02:26:55+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:12819"
+    },
+    {
+      "text": "%pyspark\n! mkdir -p /opt/spark/work-dir/tpcds_10\n\n",
+      "user": "cheewei@aisingapore.org",
+      "dateUpdated": "2025-03-10T14:33:27+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true,
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1741573492853_1330279109",
+      "id": "paragraph_1740733700602_1449501396",
+      "dateCreated": "2025-03-10T02:24:52+0000",
+      "dateStarted": "2025-03-10T10:33:52+0000",
+      "dateFinished": "2025-03-10T10:35:03+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:12820"
+    },
+    {
+      "text": "%pyspark\n! wget -O /opt/spark/work-dir/tpcds_10.zip https://sparkdltrigger.web.cern.ch/sparkdltrigger/TPCDS/tpcds_10.zip && unzip /opt/spark/work-dir/tpcds_10.zip",
+      "user": "cheewei@aisingapore.org",
+      "dateUpdated": "2025-03-10T14:33:41+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true,
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1741573492854_938356276",
+      "id": "paragraph_1740733905180_59753077",
+      "dateCreated": "2025-03-10T02:24:52+0000",
+      "dateStarted": "2025-03-10T10:35:03+0000",
+      "dateFinished": "2025-03-10T11:51:16+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:12821"
+    },
+    {
+      "text": "%pyspark\n\nimport base64\nimport io\nimport sys\n\nimport plotly.express as px\nfrom pyspark.sql.types import StringType, StructField, StructType\nfrom tpcds_pyspark import TPCDS\n\ntpcds = TPCDS(data_path=\"/opt/spark/work-dir/tpcds_10\", queries=['q1', 'q2'])\ntpcds.map_tables()\nresults = tpcds.run_TPCDS()\ntpcds.print_test_results()\ntpcds.aggregated_results_pdf\ntpcds.grouped_results_pdf\ntpcds.grouped_results_pdf.columns\n\nfig = px.bar(tpcds.grouped_results_pdf.reset_index(), x='query', y=['executorRunTime', 'executorCpuTime'], \n             title='Executor Run Time and CPU Time per Query', barmode='group',\n             labels={'value': 'Time (ms)', 'variable': 'Metric'}) # Customizing y-axis label and legend title)\n\n\nfig.write_image(\"/opt/spark/work-dir/tpcds_output_100.png\") \n",
+      "user": "cheewei@aisingapore.org",
+      "dateUpdated": "2025-03-10T14:34:41+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true,
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1741573492854_1753530171",
+      "id": "paragraph_1740734015018_1848398219",
+      "dateCreated": "2025-03-10T02:24:52+0000",
+      "dateStarted": "2025-03-10T11:51:16+0000",
+      "dateFinished": "2025-03-10T14:22:52+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:12822"
+    }
+  ],
+  "name": "benchmark",
+  "id": "2KMZWMT6G",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.12.0",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false,
+    "looknfeel": "default",
+    "personalizedMode": "false"
+  },
+  "info": {},
+  "path": "/benchmark"
+}

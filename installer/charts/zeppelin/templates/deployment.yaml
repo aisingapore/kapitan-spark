@@ -1,0 +1,143 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "zeppelin.fullname" . }}
+  namespace: {{ .Release.Namespace }} 
+  labels:
+    {{- include "zeppelin.labels" $ | trim | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+          name: {{ include "zeppelin.fullname" . }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+          name: {{ include "zeppelin.fullname" . }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: "{{ include "zeppelin.fullname" . }}-sa"
+      securityContext:
+         runAsGroup: 185 
+         runAsUser: 185 
+         fsGroup: 185
+         fsGroupChangePolicy: OnRootMismatch
+      initContainers:
+      - name: zeppelin-conf-init
+        securityContext:
+            allowPrivilegeEscalation: false
+        image: "{{.Values.image.repository}}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{.Values.image.pullPolicy}}
+        command: ["sh", "-c", "cp -r /opt/zeppelin/conf/* /zeppelin_conf"]
+        volumeMounts:
+        - name: {{ include "zeppelin.fullname" . }}-secret-files
+          mountPath: /opt/zeppelin/conf/shiro.ini
+          subPath: shiro.ini
+        - name: {{ include "zeppelin.fullname" . }}-custom-files
+          mountPath: /opt/zeppelin/conf/zeppelin-site.xml
+          subPath: zeppelin-site.xml
+        - name: {{ include "zeppelin.fullname" . }}-custom-files
+          mountPath: /opt/zeppelin/conf/interpreter.json
+          subPath: interpreter.json
+        - name: {{ include "zeppelin.fullname" . }}-conf
+          mountPath: /zeppelin_conf
+      containers:
+      - name: zeppelin-server
+        image: "{{.Values.image.repository}}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{.Values.image.pullPolicy}}
+        command: ["sh", "-c", "$(ZEPPELIN_HOME)/bin/zeppelin.sh"]
+        volumeMounts:
+        - name: {{ include "zeppelin.fullname" . }}-conf
+          mountPath: /opt/zeppelin/conf
+        - name: {{ include "zeppelin.fullname" . }}-custom-files
+          mountPath: /opt/zeppelin/k8s/interpreter/100-interpreter-spec.yaml
+          subPath: 100-interpreter-spec.yaml
+        - name: {{ include "zeppelin.fullname" . }}-notebook-volume     
+          mountPath: /opt/zeppelin/notebook
+        lifecycle:
+          preStop:
+            exec:
+              # SIGTERM triggers a quick exit; gracefully terminate instead
+              command: ["sh", "-c", "ps -ef | grep org.apache.zeppelin.server.ZeppelinServer | grep -v grep | awk '{print $2}' | xargs kill"]
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: https
+          containerPort: 8443
+        - name: rpc
+          containerPort: 12320
+        env:
+        - name: SERVICE_DOMAIN
+          value: {{ if .Values.env.SERVICE_DOMAIN }}{{ .Values.env.SERVICE_DOMAIN }}{{ else }}{{ include "zeppelin.fullname" . }}{{ end }}
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.uid
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: ZEPPELIN_K8S_SERVICE_NAME
+          value: {{ include "zeppelin.fullname" . }}
+        envFrom:
+        - configMapRef:
+            name: {{ include "zeppelin.fullname" . }}-conf-map
+        {{- if .Values.extraEnvVarsCM }}
+        - configMapRef:
+            name: {{ .Values.extraEnvVarsCM }}
+        {{- end }}
+        {{- if .Values.extraEnvVarsSecret }}
+        - secretRef:
+            name: {{ .Values.extraEnvVarsSecret }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        livenessProbe:
+          tcpSocket:
+            port: http
+          periodSeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: http
+          periodSeconds: 30
+
+      volumes:
+      - name: {{ include "zeppelin.fullname" . }}-custom-files
+        configMap: 
+           name: {{ include "zeppelin.fullname" . }}-custom-files
+      - name: {{ include "zeppelin.fullname" . }}-secret-files
+        secret: 
+           secretName: {{ include "zeppelin.fullname" . }}-shiro-secret
+      - name: {{ include "zeppelin.fullname" . }}-conf
+        emptyDir: {}
+      - name: {{ include "zeppelin.fullname" . }}-notebook-volume 
+        persistentVolumeClaim:
+          claimName: {{ include "zeppelin.fullname" . }}-notebooks-storage
+      # workaround PVC need bind to at least one pod otherwise cannot helm install   
+      - name: {{ include "zeppelin.fullname" . }}-storage
+        persistentVolumeClaim:
+          claimName: {{ include "zeppelin.fullname" . }}-storage
+      
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+

@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "zeppelin.fullname" . }}-storage
+  namespace: {{ .Release.Namespace }} 
+  labels:
+      {{- include "zeppelin.labels" $ | trim | nindent 4 }}
+  annotations:
+    helm.sh/resource-policy: "keep"
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: "50Gi"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "zeppelin.fullname" . }}-notebooks-storage
+  namespace: {{ .Release.Namespace }} 
+  labels:
+    {{- include "zeppelin.labels" $ | trim | nindent 4 }}
+  annotations:
+    helm.sh/resource-policy: "keep"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: "5Gi"

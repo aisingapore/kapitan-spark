@@ -20,3 +20,6 @@ spark-history-server:
 
 spark-dashboard:
   enabled: true
+
+zeppelin:
+  enabled: false
