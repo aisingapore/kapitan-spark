@@ -15,14 +15,16 @@ data:
               operator: Equal
               value: spark-driver
               effect: NoSchedule
+        securityContext:
+            fsGroup: 185
+            runAsGroup: 185
+            runAsNonRoot: true
+            runAsUser: 185
+            fsGroupChangePolicy: OnRootMismatch
         containers:
             - securityContext:
                 allowPrivilegeEscalation: false 
-                fsGroup: 185
-                runAsGroup: 185
-                runAsNonRoot: true
-                runAsUser: 185
-                fsGroupChangePolicy: OnRootMismatch
+               
 
 
   executor_pod_template.yaml: |
@@ -34,11 +36,12 @@ data:
               operator: Equal
               value: spark
               effect: NoSchedule 
+        securityContext:
+            fsGroup: 185
+            runAsGroup: 185
+            runAsNonRoot: true
+            runAsUser: 185
+            fsGroupChangePolicy: OnRootMismatch
         containers:
             - securityContext:
                 allowPrivilegeEscalation: false 
-                fsGroup: 185
-                runAsGroup: 185
-                runAsNonRoot: true
-                runAsUser: 185
-                fsGroupChangePolicy: OnRootMismatch

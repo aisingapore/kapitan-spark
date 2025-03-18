@@ -21,7 +21,7 @@ Components:
 - [Jupyter Lab](https://github.com/jupyterlab/jupyterlab)
 - [SparkMagic Kernel](https://github.com/jupyter-incubator/sparkmagic)
 - [Spark Dashboard](https://github.com/cerndb/spark-dashboard)
-
+- [Zeppelin](https://github.com/apache/zeppelin) not supported ARM64
 
 
 We invite you to try this out and let us know any issues/feedback you have via Github Issues. Do let us know what adaptions you have done for your setup via Github Discussions.
@@ -53,7 +53,7 @@ Requirements:
 1. Run the following install command, where `spark-bundle` is the name you prefer:
 
     ```sh
-    helm install spark-bundle installer --namespace kapitanspark --create-namespace --atomic --timeout=15m
+    helm install spark-bundle installer --namespace kapitanspark --create-namespace --atomic --timeout=30m
     ```
 
 2. Run the command `kubectl get ingress --namespace kapitanspark` to get IP address of KUBERNETES_NODE_IP. For default password, please refer to component section in this document. After that you can access 
@@ -61,7 +61,7 @@ Requirements:
     - Spark History Server at http://KUBERNETES_NODE_IP/spark-history-server
     - Lighter UI http://KUBERNETES_NODE_IP/lighter 
     - Spark Dashboard http://KUBERNETES_NODE_IP/grafana
-
+    - Zeppelin http://KUBERNETES_NODE_IP/zeppelin
 <!-- </details> -->
 
 
@@ -109,6 +109,16 @@ Requirements:
     - Default user: `dataOps` password: `5Wmi95w4`
 - Spark Dashboard
     - Default user: `dashboard` password: `1K7rYwg655Zl`
+
+
+- Zeppelin 
+    - You may rebuild the image using the Dockerfile `zeppelin/Dockerfile` 
+    - After rebuilding, modify the following keys in `values.yaml`: `image.repository`, `image.tag`, `
+ZEPPELIN_K8S_CONTAINER_IMAGE` in `values.yaml`.
+    - If Spark History Server uses Persistent Volumes to save event logs instead of Blob storage S3a, ensure to install it with `spark-history-server` component on the same Kubernetes namespace.
+    - Dependencies: `hive-metastore`, `spark-dashboard` and `spark-history-server` components. The latter can be turned off in `values.yaml`.
+    - Default user: `dataOps` password: `Tz44828IX60O`
+
 </details>
 
 
@@ -134,7 +144,7 @@ You may customise your installation of the above components by editing the file 
 Alternatively, you can create a copy of the values file and run the following modified command
 ```bash
 
- helm install spark-bundle installer --values new_values.yaml --namespace kapitanspark --create-namespace --atomic --timeout=15m
+ helm install spark-bundle installer --values new_values.yaml --namespace kapitanspark --create-namespace --atomic --timeout=30m
  ```
 
 ##### Configuration Using Kustomize :
@@ -158,11 +168,11 @@ You may need to adjust the Spark Thrift Server Port Number if you are installing
 <details><summary>Show Sample Commands to Create Multiple Instances</summary>
 
 ```bash 
-helm install spark-production installer --namespace kapitanspark-prod --create-namespace --atomic --timeout=15m
+helm install spark-production installer --namespace kapitanspark-prod --create-namespace --atomic --timeout=30m
 ```
 
 ```bash 
-helm install spark-testing installer --namespace kapitanspark-test --create-namespace --atomic --timeout=15m
+helm install spark-testing installer --namespace kapitanspark-test --create-namespace --atomic --timeout=30m
 ```
 
 </details>
@@ -184,7 +194,7 @@ Requirements:
 4. Execute the install command stated below in the folder `kcustomize/example/prod/`, replacing `spark-bundle` with your preferred name. You can add `--dry-run=server` to test any error in helm files before installation:
     ```sh
     cd kcustomize/example/prod/
-    helm install spark-bundle ../../../installer --namespace kapitanspark  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace --atomic --timeout=15m
+    helm install spark-bundle ../../../installer --namespace kapitanspark  --post-renderer ./kustomize.sh --values ./values.yaml --create-namespace --atomic --timeout=30m
     ```
 
 5. After successful installation, you should be able to access the Jupyter Lab, Spark History Server, Lighter UI and Dashboard based on your configuration of the Ingress section in `values.yaml`.
@@ -230,7 +240,7 @@ chmod 0700 ~/.kube
 ```sh
 microk8s enable hostpath-storage
 microk8s enable ingress
-
+microk8s enable metrics-server
 #output your kubeconfig using this command
 microk8s config
 

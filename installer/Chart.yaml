@@ -34,3 +34,7 @@ dependencies:
   version: 0.1.0
   condition: spark-dashboard.enabled
 
+- name: zeppelin
+  repository: file://charts/zeppelin
+  version: 0.1.0
+  condition: zeppelin.enabled

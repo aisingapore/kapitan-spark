@@ -17,13 +17,13 @@ spec:
       {{- end }}
     {{- if .Values.grafana.ingress.tls }}
     tls:
-        {{- range .Values.grafana.ingress.tls }}
+        {{- range .Values.grafana.ingress.tls  }}
         - hosts:
             {{- range .hosts }}
             - {{ . | quote }}
             {{- end }}
         {{- if .secretName  }}
-        secretName: {{ .secretName }}
+          secretName: {{ .secretName }}
         {{- end }}
 
         {{- end }}
