@@ -24,6 +24,11 @@ spec:
       {{ toYaml .Values.image.pullSecrets | indent 8 }}
       {{- end }}   
       serviceAccountName: "{{ include "jupyterlab.fullname" . }}-sa"
+      securityContext:
+          runAsGroup: 100 
+          runAsUser: 1000 
+          fsGroup: 100
+          fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -84,4 +89,5 @@ spec:
         - name: persist-notebooks
           persistentVolumeClaim:
               claimName: {{ include "jupyterlab.fullname" . }}-persist-notebooks
+
       
