@@ -26,9 +26,14 @@ ADD --chown=spark:spark https://repo1.maven.org/maven2/com/fasterxml/woodstox/wo
 ADD --chown=spark:spark https://repo1.maven.org/maven2/org/codehaus/woodstox/stax2-api/4.2.1/stax2-api-4.2.1.jar $SPARK_HOME/jars
 ADD --chown=spark:spark https://repo1.maven.org/maven2/org/apache/commons/commons-configuration2/2.11.0/commons-configuration2-2.11.0.jar $SPARK_HOME/jars
 ADD --chown=spark:spark https://repo1.maven.org/maven2/com/google/re2j/re2j/1.8/re2j-1.8.jar $SPARK_HOME/jars
+
+# for spark kafka streaming
+ADD --chown=spark:spark https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.12/3.5.1/spark-sql-kafka-0-10_2.12-3.5.1.jar $SPARK_HOME/jars
+
 # excel
 ADD --chown=spark:spark https://repo1.maven.org/maven2/com/crealytics/spark-excel_2.12/3.5.1_0.20.4/spark-excel_2.12-3.5.1_0.20.4.jar $SPARK_HOME/jars
 RUN chmod -R go+r $SPARK_HOME/jars
+
 
 RUN apt update && apt upgrade -y && apt install -y software-properties-common unzip htop
 # RUN apt-get install --reinstall ca-certificates
