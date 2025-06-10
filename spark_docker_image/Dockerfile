@@ -29,7 +29,7 @@ ADD --chown=spark:spark https://repo1.maven.org/maven2/com/google/re2j/re2j/1.8/
 
 # for spark kafka streaming
 ADD --chown=spark:spark https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.12/3.5.1/spark-sql-kafka-0-10_2.12-3.5.1.jar $SPARK_HOME/jars
-
+ADD --chown=spark:spark https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.4.1/kafka-clients-3.4.1.jar $SPARK_HOME/jars
 # excel
 ADD --chown=spark:spark https://repo1.maven.org/maven2/com/crealytics/spark-excel_2.12/3.5.1_0.20.4/spark-excel_2.12-3.5.1_0.20.4.jar $SPARK_HOME/jars
 RUN chmod -R go+r $SPARK_HOME/jars
