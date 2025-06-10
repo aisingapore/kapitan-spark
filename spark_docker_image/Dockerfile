@@ -27,10 +27,12 @@ ADD --chown=spark:spark https://repo1.maven.org/maven2/org/codehaus/woodstox/sta
 ADD --chown=spark:spark https://repo1.maven.org/maven2/org/apache/commons/commons-configuration2/2.11.0/commons-configuration2-2.11.0.jar $SPARK_HOME/jars
 ADD --chown=spark:spark https://repo1.maven.org/maven2/com/google/re2j/re2j/1.8/re2j-1.8.jar $SPARK_HOME/jars
 
-# for spark kafka streaming                                   
+# for spark kafka streaming                                                                                                 
 ADD --chown=spark:spark https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.12/3.5.1/spark-sql-kafka-0-10_2.12-3.5.1.jar $SPARK_HOME/jars
 ADD --chown=spark:spark https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.4.1/kafka-clients-3.4.1.jar $SPARK_HOME/jars
 ADD --chown=spark:spark https://repo1.maven.org/maven2/org/apache/spark/spark-token-provider-kafka-0-10_2.12/3.5.1/spark-token-provider-kafka-0-10_2.12-3.5.1.jar $SPARK_HOME/jars
+ADD --chown=spark:spark https://repo1.maven.org/maven2/org/apache/commons/commons-pool2/2.11.1/commons-pool2-2.11.1.jar $SPARK_HOME/jars
+
 # excel
 ADD --chown=spark:spark https://repo1.maven.org/maven2/com/crealytics/spark-excel_2.12/3.5.1_0.20.4/spark-excel_2.12-3.5.1_0.20.4.jar $SPARK_HOME/jars
 RUN chmod -R go+r $SPARK_HOME/jars
