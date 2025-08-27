@@ -27,8 +27,3 @@ maintainers:
   - name: DataOps
     email: dataops@aisingapore.org
 
-dependencies:
-  - name: postgresql
-    version: "13.2.9"
-    repository: "@bitnami"
-    alias: lighter-postgresql

@@ -1,0 +1,120 @@
+{{- $postgresqlDatabase := index .Values "hive-metastore-postgresql" "auth" "database" -}}
+{{- $postgresqlUsername := index .Values "hive-metastore-postgresql" "auth" "username" -}}
+{{- $postgresqlPassword := index .Values "hive-metastore-postgresql" "auth" "password" -}}
+{{- $postgresqlImageTag := index .Values "hive-metastore-postgresql" "image" "tag" | default "postgres:15" -}}
+{{- $primaryReadinessInitialDelay := index .Values "hive-metastore-postgresql" "primary" "readinessProbe" "initialDelaySeconds" | default 300 -}}
+{{- $primaryLivenessInitialDelay := index .Values "hive-metastore-postgresql" "primary" "livenessProbe" "initialDelaySeconds" | default 300 -}}
+
+
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "hive-metastore.fullname" . }}-postgresql
+  namespace: {{ .Release.Namespace }} 
+  labels:
+    {{- include "hive-metastore.labels" $ | trim | nindent 4 }}
+  annotations:
+    helm.sh/resource-policy: "keep"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "hive-metastore.fullname" . }}-postgresql
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "hive-metastore.labels" $ | trim | nindent 4 }}
+spec:
+  serviceName: {{ include "hive-metastore.fullname" . }}-postgresql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "hive-metastore.fullname" . }}-postgresql
+  template:
+    metadata:
+      labels:
+        app: {{ include "hive-metastore.fullname" . }}-postgresql
+    spec:
+      securityContext:
+          runAsGroup: 999 
+          runAsUser: 999 
+          fsGroup: 999
+          fsGroupChangePolicy: OnRootMismatch
+      containers:
+      - name: {{ include "hive-metastore.fullname" . }}-postgresql
+        image: {{ $postgresqlImageTag }}
+        securityContext:
+              allowPrivilegeEscalation: false
+        resources: 
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        env:
+        - name: POSTGRES_DB
+          value: {{ $postgresqlDatabase }}
+        - name: POSTGRES_USER
+          value: {{ required "Postgresql username required" $postgresqlUsername }}
+        - name: POSTGRES_PASSWORD
+          value: {{ required "Postgresql password required" $postgresqlPassword }}
+        - name: PGDATA                  
+          value: /data/pgdata
+        ports:
+        - containerPort: 5432
+        livenessProbe:
+            exec:
+                command:
+                    - /bin/sh
+                    - -c
+                    - pg_isready -U {{ $postgresqlUsername }} -d {{ $postgresqlDatabase }}
+            initialDelaySeconds: {{ $primaryLivenessInitialDelay }}
+            periodSeconds: 10
+        readinessProbe:
+            exec:
+                command:
+                    - /bin/sh
+                    - -c
+                    - pg_isready -U {{ $postgresqlUsername }} -d {{ $postgresqlDatabase }}
+            initialDelaySeconds: {{ $primaryReadinessInitialDelay }}
+            periodSeconds: 5
+        volumeMounts:
+        - name: data
+          mountPath: /data
+     
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: {{ include "hive-metastore.fullname" . }}-postgresql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "hive-metastore.fullname" . }}-postgresql
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "hive-metastore.labels" $ | trim | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: {{ include "hive-metastore.fullname" . }}-postgresql
+  selector:
+    app: {{ include "hive-metastore.fullname" . }}-postgresql
+
+
+
+
+
+
+
