@@ -61,7 +61,7 @@ ingress:
 
 lighter-postgresql:
   image:
-    tag: 15.3.0-debian-11-r7
+    tag: postgres:15.3-alpine
   auth:
     username: lighter
     password: mU233@t3PqXP
