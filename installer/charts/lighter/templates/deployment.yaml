@@ -120,7 +120,7 @@ spec:
                         # -   name: LIGHTER_SPARK_HISTORY_SERVER_URL
                         #     value: https://address_to_spark_history/spark-history
                         -   name: LIGHTER_MAX_RUNNING_JOBS
-                            value: "100"
+                            value: "500"
                         -   name: LIGHTER_KUBERNETES_NAMESPACE
                             value: {{ .Release.Namespace }} 
                         -   name: LIGHTER_URL
@@ -279,7 +279,7 @@ spec:
                                         "spark.hadoop.fs.s3a.bucket.all.committer.magic.enabled": "true"
                                     }'
                         - name: LIGHTER_SESSION_TIMEOUT_INTERVAL
-                          value: "90m" 
+                          value: "45m" 
                         - name: LIGHTER_SPARK_HISTORY_SERVER_URL
                           value: "{{ .Values.spark.history.url }}"
                         - name: LIGHTER_KUBERNETES_SERVICE_ACCOUNT
