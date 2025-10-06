@@ -5,7 +5,9 @@ ARG HADOOP_VERSION=3.3.4
 
 
 RUN apt-get update && \
-    apt-get install -y curl procps --no-install-recommends && \
+    apt-get install -y curl procps ca-certificates --no-install-recommends && \
+    apt-get upgrade -y ca-certificates && \
+    update-ca-certificates && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
