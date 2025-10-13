@@ -1,13 +1,22 @@
-FROM openjdk:11-slim-buster
+# FROM openjdk:11-slim-buster
+FROM eclipse-temurin:21-jdk-jammy
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 #ARG HADOOP_VERSION=3.2.0
 ARG HADOOP_VERSION=3.3.4
 
 
 RUN apt-get update && \
-    apt-get install -y curl procps --no-install-recommends && \
+    apt-get install -y curl procps ca-certificates --no-install-recommends && \
+    apt-get upgrade -y ca-certificates && \
+    update-ca-certificates && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+RUN cp /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt.backup
+
+# Download and replace
+RUN curl -o /etc/ssl/certs/ca-certificates.crt https://curl.se/ca/cacert.pem
+
 
 COPY --from=hairyhenderson/gomplate:stable /gomplate /usr/local/bin/gomplate
 RUN chmod 755 /usr/local/bin/gomplate
