@@ -71,6 +71,12 @@ spec:
               do
                 sleep 5;
               done
+        - name: verify-google-secret
+          image: busybox:1.35.0
+          command: ['sh', '-c', 'ls -la /opt/spark/google-secret/ && cat /opt/spark/google-secret/google_sa.json']
+          volumeMounts:
+            - name: google-secret
+              mountPath: /opt/spark/google-secret
       containers:
       - name: {{ .Chart.Name }}
         image:  "{{.Values.image.repository}}:{{ .Values.image.tag }}"
@@ -141,6 +147,8 @@ spec:
           - spark.hadoop.fs.gs.impl=com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem
           - --conf 
           - spark.delta.logStore.gs.impl=io.delta.storage.GCSLogStore
+          - --conf
+          - spark.kubernetes.executor.secrets.{{ include "spark-thrift-server.fullname" . }}-google-secret=/opt/spark/google-secret
           - --packages 
           - ""
           - --conf
@@ -150,8 +158,7 @@ spec:
           - name: secret-files
             mountPath: /opt/spark/conf
           - name: google-secret
-            mountPath: /opt/spark/google_sa.json
-            subPath: google_sa.json        
+            mountPath: /opt/spark/google-secret
         env:
         - name: THRIFT_POD_NAME
           valueFrom:
