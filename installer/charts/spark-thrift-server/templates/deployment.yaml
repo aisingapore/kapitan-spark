@@ -71,12 +71,6 @@ spec:
               do
                 sleep 5;
               done
-        - name: verify-google-secret
-          image: busybox:1.35.0
-          command: ['sh', '-c', 'ls -la /opt/spark/google-secret/ && cat /opt/spark/google-secret/google_sa.json']
-          volumeMounts:
-            - name: google-secret
-              mountPath: /opt/spark/google-secret
       containers:
       - name: {{ .Chart.Name }}
         image:  "{{.Values.image.repository}}:{{ .Values.image.tag }}"
