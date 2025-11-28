@@ -141,6 +141,8 @@ spec:
           - spark.hadoop.fs.gs.impl=com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem
           - --conf 
           - spark.delta.logStore.gs.impl=io.delta.storage.GCSLogStore
+          - --conf
+          - spark.kubernetes.executor.secrets.{{ include "spark-thrift-server.fullname" . }}-google-secret=/opt/spark/google-secret
           - --packages 
           - ""
           - --conf
@@ -150,8 +152,7 @@ spec:
           - name: secret-files
             mountPath: /opt/spark/conf
           - name: google-secret
-            mountPath: /opt/spark/google_sa.json
-            subPath: google_sa.json        
+            mountPath: /opt/spark/google-secret
         env:
         - name: THRIFT_POD_NAME
           valueFrom:
